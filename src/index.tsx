@@ -4,7 +4,9 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Member from './pages/member'
 import MemberList from './pages/memberList'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import Route from 'react-router-dom/Route'
+import Switch from 'react-router-dom/Switch'
+import BrowserRouter from 'react-router-dom/BrowserRouter'
 
 // ReactDOM.render(<Member mode="UPD" id="J5c6UIcyBO2T2bylT0ev"/>, document.getElementById('root'));
 ReactDOM.render(

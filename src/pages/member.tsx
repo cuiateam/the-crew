@@ -1,6 +1,6 @@
 import React from 'react'
 import Firebase from '../config/firebase'
-import { Link } from 'react-router-dom'
+import Link from 'react-router-dom/Link'
 import {
     ThemeProvider,
     CSSReset,
@@ -24,6 +24,7 @@ import {
 interface Skill { name: String, value: number }
 interface Props { mode?: string, id?: string }
 interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, props?: any}
+const db = Firebase.firestore()
 
 class Member extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -61,7 +62,6 @@ class Member extends React.Component<Props, State> {
 
     addMember = e => {
         e.preventDefault()
-        const db = Firebase.firestore()
         db.collection("Members").add({
             name: this.state.name,
             phone: this.state.phone,
@@ -80,7 +80,6 @@ class Member extends React.Component<Props, State> {
 
     updateMember = e => {
         e.preventDefault()
-        const db = Firebase.firestore()
         db.collection("Members").doc(this.state.props.id).set({
             name: this.state.name,
             phone: this.state.phone,
@@ -139,7 +138,6 @@ class Member extends React.Component<Props, State> {
     }
 
     loadMember = () => {
-        const db = Firebase.firestore()
         let memberRef = db.collection("Members").doc(this.state.props.id)
 
         memberRef.get().then((m: any) => {
