@@ -1,6 +1,7 @@
 import React from 'react'
 import Firebase from '../config/firebase'
-import Link from 'react-router-dom/Link'
+import { Link } from 'react-router-dom'
+import '../css/main.css'
 import {
     ThemeProvider,
     CSSReset,
@@ -11,8 +12,10 @@ import {
     Flex,
     Heading,
     Grid,
-    Box
-} from '@chakra-ui/core'
+    Box,
+    Divider,
+
+  } from '@chakra-ui/core'
 
 interface Skill { name: String, value: number }
 interface Props { }
@@ -62,23 +65,32 @@ class App extends React.Component<Props, State> {
         return (
             <ThemeProvider theme={theme}>
                 <CSSReset />
+                
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>The Crew</Heading>
                     <Button ml="10" fontSize="xs" variantColor="green"><Link to={`/member/0/INS`}>+</Link></Button>
                 </Flex>
+                
+                <Divider borderColor="blackAlpha.500" mt={10}/>
+                
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
-                        <List>
-                            {
-                                this.state.memberList.map((m, index) => 
-                                <div key={"div" + index}>
-                                    <ListItem key={index} display="inline" fontWeight="bold" mr="10" >- <Link to={`/member/${m.id}/UPD`}>{m.name}</Link></ListItem>
-                                    <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>
-                                    <br />
-                                </div>
-                                )
-                            }
-                        </List>
+                        <table id="tabela">
+                            <tbody>
+                                {
+                                    this.state.memberList.map((m, index) => 
+                                    <tr key={"div" + index}>
+                                        <td id="col-Name" key={index}>
+                                            <Link to={`/member/${m.id}/UPD`}>{m.name}</Link>
+                                        </td>
+                                        <td id="col-Button">
+                                        <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>
+                                        </td>
+                                    </tr>
+                                    )
+                                }
+                            </tbody>
+                        </table>
                     </Box>
                 </Grid>
             </ThemeProvider>
