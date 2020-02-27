@@ -18,7 +18,8 @@ import {
     Avatar,
     Divider,
     Alert,
-    AlertIcon
+    AlertIcon,
+    Textarea 
 } from '@chakra-ui/core'
 
 interface Skill { name: String, value: number }
@@ -114,11 +115,23 @@ class Member extends React.Component<Props, State> {
 
     }
 
+    deleteSkill = (s: Skill) => {
+        let skillsAux: Skill[] = this.state.skills
+        skillsAux = skillsAux.filter(sk => sk.name.trim() !== s.name.trim())
+        this.setState({skills: skillsAux})
+    }
+
     addWww = () => {
         this.setState({
             www: [...this.state.www, this.state.wwwdesc],
             wwwdesc: ""
         })
+    }
+
+    deleteWww = (w: string) => {
+        let wwwAux: string[] = this.state.www
+        wwwAux = wwwAux.filter(www => www.trim() !== w.trim())
+        this.setState({www: wwwAux})
     }
 
     cleanState = () => {
@@ -164,6 +177,7 @@ class Member extends React.Component<Props, State> {
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
                 </Flex>
+                <Divider borderColor="blackAlpha.500" mt={10}/>
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <FormControl>
@@ -175,7 +189,7 @@ class Member extends React.Component<Props, State> {
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Phone</FormLabel>
-                            <Input type="text" name="phone" placeholder="(99) 9 9999-9999" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.phone} />
+                            <Input type="text" name="phone" placeholder="+99 (99) 9 9999-9999" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.phone} />
                         </FormControl>    
                         <FormControl>    
                             <FormLabel pt={10}>E-mail</FormLabel>
@@ -199,7 +213,12 @@ class Member extends React.Component<Props, State> {
                                 </div>
                             }
                             <List>
-                            {this.state.skills.map((s, index) => <ListItem key={index}> - {s.name} ({s.value}/5)</ListItem> )}
+                            {this.state.skills.map((s, index) =>
+                                <div key={"div" + index}>
+                                    <ListItem display="inline" key={index}> - {s.name} ({s.value}/5)</ListItem>
+                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
+                                </div>
+                            )}
                             </List>
                         </FormControl>    
                         <FormControl>
@@ -211,12 +230,17 @@ class Member extends React.Component<Props, State> {
                                 </div>
                             }
                             <List>
-                            {this.state.www.map((w, index) => <ListItem key={index}> - {w}</ListItem>)}
+                            {this.state.www.map((w, index) =>
+                                <div key={"div" + index}>
+                                    <ListItem display="inline" key={index}> - {w}</ListItem>
+                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                </div>
+                             )}
                             </List>
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Observation</FormLabel>
-                            <Input type="text" name="obs" placeholder="Observation" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
+                            <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
                         </FormControl>    
                         <FormControl>
                             {this.state.phone &&
