@@ -6,8 +6,6 @@ import {
     ThemeProvider,
     CSSReset,
     theme,
-    List,
-    ListItem,
     Button,
     Flex,
     Heading,
@@ -81,7 +79,7 @@ class App extends React.Component<Props, State> {
                                     this.state.memberList.map((m, index) => 
                                     <tr key={"div" + index}>
                                         <td id="col-Name" key={index}>
-                                            <Link to={`/member/${m.id}/UPD`}>{m.name}</Link>
+                                            <Link to={`/member/${m.id}`}>{m.name}</Link>
                                         </td>
                                         <td id="col-Button">
                                         <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>

@@ -24,7 +24,7 @@ import {
 
 interface Skill { name: String, value: number }
 interface Props { mode?: string, id?: string }
-interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, props?: any}
+interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string}
 const db = Firebase.firestore()
 
 class Member extends React.Component<Props, State> {
@@ -48,9 +48,10 @@ class Member extends React.Component<Props, State> {
             wwwdesc: "",
             alertMessage: "",
             showAlert: false,
-            props: propsAux.match.params
+            id: propsAux.match.params.id,
+            mode: 'DSP'
         }
-        if(this.state.props.mode !== "INS")
+        if(this.state.mode !== "INS")
             this.loadMember()
 
     }
@@ -73,7 +74,7 @@ class Member extends React.Component<Props, State> {
             www: this.state.www,
             obs: this.state.obs
         }).then(() => {
-            this.setState({alertMessage: "Member inserted with success!", showAlert: true})
+            this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP'})
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -81,7 +82,7 @@ class Member extends React.Component<Props, State> {
 
     updateMember = e => {
         e.preventDefault()
-        db.collection("Members").doc(this.state.props.id).set({
+        db.collection("Members").doc(this.state.id).set({
             name: this.state.name,
             phone: this.state.phone,
             email: this.state.email,
@@ -91,7 +92,7 @@ class Member extends React.Component<Props, State> {
             www: this.state.www,
             obs: this.state.obs
         }).then(() => {
-            this.setState({alertMessage: "Member updated with success!", showAlert: true})
+            this.setState({alertMessage: "Member updated with success!", showAlert: true, mode: 'DSP'})
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -151,7 +152,7 @@ class Member extends React.Component<Props, State> {
     }
 
     loadMember = () => {
-        let memberRef = db.collection("Members").doc(this.state.props.id)
+        let memberRef = db.collection("Members").doc(this.state.id)
 
         memberRef.get().then((m: any) => {
             if(m.exists){
@@ -185,27 +186,27 @@ class Member extends React.Component<Props, State> {
                         </FormControl>
                         <FormControl>
                             <FormLabel pt={10}>Name</FormLabel>
-                            <Input type="text" name="name" placeholder="Name" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.name} />
+                            <Input type="text" name="name" placeholder="Name" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.name} />
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Phone</FormLabel>
-                            <Input type="text" name="phone" placeholder="+99 (99) 9 9999-9999" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.phone} />
+                            <Input type="text" name="phone" placeholder="+99 (99) 9 9999-9999" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.phone} />
                         </FormControl>    
                         <FormControl>    
                             <FormLabel pt={10}>E-mail</FormLabel>
-                            <Input type="email" name="email" placeholder="E-mail" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.email} />
+                            <Input type="email" name="email" placeholder="E-mail" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.email} />
                         </FormControl>    
                         <FormControl>    
                             <FormLabel pt={10}>GitHub</FormLabel>
-                            <Input type="text" name="github" placeholder="Github User" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.github} />
+                            <Input type="text" name="github" placeholder="Github User" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.github} />
                         </FormControl>    
                         <FormControl>    
                             <FormLabel pt={10}>LinkedIn</FormLabel>
-                            <Input type="text" name="linkedin" placeholder="LinkedIn User" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.linkedin} />
+                            <Input type="text" name="linkedin" placeholder="LinkedIn User" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.linkedin} />
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10} display="flex">Skills</FormLabel>
-                            {(this.state.props.mode === "INS" || this.state.props.mode === "UPD") &&
+                            {(this.state.mode === "INS" || this.state.mode === "UPD") &&
                                 <div>
                                     <Input type="text" name="skillname" placeholder="Name" display="inline" width="60%" onChange={this.updateInput} value={this.state.skillname} />
                                     <Input type="number" name="skillvalue" placeholder="Value" display="inline" width="20%" onChange={this.updateInput} value={this.state.skillvalue} />
@@ -216,14 +217,16 @@ class Member extends React.Component<Props, State> {
                             {this.state.skills.map((s, index) =>
                                 <div key={"div" + index}>
                                     <ListItem display="inline" key={index}> - {s.name} ({s.value}/5)</ListItem>
-                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
-                                </div>
+                                    {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
+                                    }
+                                    </div>
                             )}
                             </List>
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Wanna Work With</FormLabel>
-                            {(this.state.props.mode === "INS" || this.state.props.mode === "UPD") &&
+                            {(this.state.mode === "INS" || this.state.mode === "UPD") &&
                                 <div>
                                     <Input type="text" name="wwwdesc" placeholder="Name" display="inline" width="80%" onChange={this.updateInput} value={this.state.wwwdesc} />
                                     <Button display="inline" variantColor="green" onClick={this.addWww}>+</Button>
@@ -233,29 +236,31 @@ class Member extends React.Component<Props, State> {
                             {this.state.www.map((w, index) =>
                                 <div key={"div" + index}>
                                     <ListItem display="inline" key={index}> - {w}</ListItem>
-                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                    {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                    }
                                 </div>
                              )}
                             </List>
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Observation</FormLabel>
-                            <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.props.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
+                            <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
                         </FormControl>    
                         <FormControl>
                             {this.state.phone &&
-                                <Button size="sm" backgroundColor="green.500" color="whiteAlpha.900" mt={10} leftIcon="external-link">
+                                <Button size="sm" backgroundColor="green.500" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
                                     <a target="_blank" rel="noopener noreferrer" href={"https://wa.me/".concat(this.state.phone.replace(/[^0-9]/g, ''))}>WhatsApp</a>
                                 </Button>
                             }
                             {this.state.github &&
-                                <Button size="sm" backgroundColor="gray.900" color="whiteAlpha.900" mt={10} ml={5} leftIcon="external-link">
+                                <Button size="sm" backgroundColor="gray.900" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
                                     <a target="_blank" rel="noopener noreferrer" href={"https://github.com/".concat(this.state.github)}>GitHub</a>
                                 </Button>
                             }
 
                             {this.state.linkedin &&
-                                <Button size="sm" backgroundColor="blue.500" color="whiteAlpha.900" mt={10} ml={5} leftIcon="external-link">
+                                <Button size="sm" backgroundColor="blue.500" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
                                     <a target="_blank" rel="noopener noreferrer" href={"https://br.linkedin.com/in/".concat(this.state.linkedin)}>LinkedIn</a>
                                 </Button>
                             }
@@ -269,15 +274,21 @@ class Member extends React.Component<Props, State> {
 
                             <Divider borderColor="blackAlpha.500" mt={10}/>
 
-                            {this.state.props.mode === "INS" &&
+                            {this.state.mode === "INS" &&
                                 <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
-                            {this.state.props.mode === "UPD" &&
+                            {this.state.mode === "UPD" &&
                                 <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
                                     Save
+                                </Button>
+                            }
+
+                            {this.state.mode === "DSP" &&
+                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'UPD'})} leftIcon="edit">
+                                    Edit
                                 </Button>
                             }
                             <Button backgroundColor="gray.500" color="whiteAlpha.900" leftIcon="arrow-back"><Link to="/">Back</Link></Button>

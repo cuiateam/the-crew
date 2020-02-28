@@ -11,7 +11,7 @@ ReactDOM.render(
     <BrowserRouter>
         <Switch>
             <Route path="/" exact={true} component={MemberList} />
-            <Route path="/member/:id/:mode" component={(props) => <Member {...props}/>} />
+            <Route path="/member/:id" component={(props) => <Member {...props}/>} />
         </Switch>
     </ BrowserRouter>
     , document.getElementById('root'));
