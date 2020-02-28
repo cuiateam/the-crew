@@ -1,12 +1,12 @@
-#tabela tr td{
+.table tr td{
     width: 100%;
 }
 
 .content {
-    min-height: calc(100vh - 70px);
+    min-height: calc(100vh - 100px);
   }
 
-  .footer {
+.footer {
     height: 50px;
     left: 0;
     right: 0;
