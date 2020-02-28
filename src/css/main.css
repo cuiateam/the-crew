@@ -1,3 +1,25 @@
-#tabela tr td{
+.table tr td{
     width: 100%;
 }
+
+.content {
+    min-height: calc(100vh - 100px);
+  }
+
+.footer {
+    height: 50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.footer svg {
+    display: inline-flex;
+}
+
+.footer a svg{
+    display: inline-flex;
+}
+
+
+

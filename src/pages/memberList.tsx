@@ -6,8 +6,6 @@ import {
     ThemeProvider,
     CSSReset,
     theme,
-    List,
-    ListItem,
     Button,
     Flex,
     Heading,
@@ -68,23 +66,23 @@ class App extends React.Component<Props, State> {
                 
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>The Crew</Heading>
-                    <Button ml="10" fontSize="xs" variantColor="green"><Link to={`/member/0/INS`}>+</Link></Button>
+                    <Button ml={["40%", "70%", "80%"]} variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
                 </Flex>
                 
                 <Divider borderColor="blackAlpha.500" mt={10}/>
                 
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
-                        <table id="tabela">
+                        <table className="table">
                             <tbody>
                                 {
                                     this.state.memberList.map((m, index) => 
                                     <tr key={"div" + index}>
-                                        <td id="col-Name" key={index}>
-                                            <Link to={`/member/${m.id}/UPD`}>{m.name}</Link>
+                                        <td className="col-Name" key={index}>
+                                            <Link to={`/member/${m.id}`}>{m.name}</Link>
                                         </td>
-                                        <td id="col-Button">
-                                        <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>
+                                        <td className="col-Button">
+                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>
                                         </td>
                                     </tr>
                                     )
