@@ -312,6 +312,12 @@ class Member extends React.Component<Props, State> {
                                 </Button>
                             }
 
+                            {this.state.mode === "UPD" &&
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'DSP'})} leftIcon="close">
+                                    Cancel
+                                </Button>
+                            }
+
                             {this.state.mode === "DSP" &&
                                 <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'UPD'})} leftIcon="edit">
                                     Edit
