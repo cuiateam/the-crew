@@ -48,7 +48,7 @@ class Member extends React.Component<Props, State> {
             alertMessage: "",
             showAlert: false,
             id: propsAux.match.params.id,
-            mode: 'DSP'
+            mode: propsAux.match.params.id === '0' ? 'INS' : 'DSP'
         }
         if(this.state.mode !== "INS")
             this.loadMember()
@@ -72,11 +72,12 @@ class Member extends React.Component<Props, State> {
             skills: this.state.skills,
             www: this.state.www,
             obs: this.state.obs
-        }).then(() => {
-            this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP'})
+        }).then((docRef) => {
+            this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP', id: docRef.id})
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
+
     }
 
     updateMember = e => {

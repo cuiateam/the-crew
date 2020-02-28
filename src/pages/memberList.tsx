@@ -66,7 +66,7 @@ class App extends React.Component<Props, State> {
                 
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>The Crew</Heading>
-                    <Button ml={["40%", "70%", "80%"]} variantColor="green" ><Link to={`/member/0/INS`}>+</Link></Button>
+                    <Button ml={["40%", "70%", "80%"]} variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
                 </Flex>
                 
                 <Divider borderColor="blackAlpha.500" mt={10}/>
