@@ -2,6 +2,7 @@ import './css/main.css'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
+import NotFound from './pages/notFound'
 import Member from './pages/member'
 import MemberList from './pages/memberList'
 import { Route, Switch, BrowserRouter }from 'react-router-dom'
@@ -13,6 +14,7 @@ ReactDOM.render(
             <Switch>
                 <Route path="/" exact={true} component={MemberList} />
                 <Route path="/member/:id" component={(props) => <Member {...props}/>} />
+                <Route path="*" component={NotFound} />
             </Switch>
         </div>
         <div className="footer">
