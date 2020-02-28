@@ -1,6 +1,6 @@
 import React from 'react'
 import Firebase from '../config/firebase'
-import Link from 'react-router-dom/Link'
+import { Link } from 'react-router-dom'
 import {
     ThemeProvider,
     CSSReset,
