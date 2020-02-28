@@ -1,6 +1,7 @@
 import React from 'react'
 import Firebase from '../config/firebase'
 import { Link } from 'react-router-dom'
+import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp } from 'react-icons/io'
 import {
     ThemeProvider,
     CSSReset,
@@ -13,8 +14,6 @@ import {
     Heading,
     Grid,
     Box,
-    List,
-    ListItem,
     Avatar,
     Divider,
     Alert,
@@ -182,7 +181,23 @@ class Member extends React.Component<Props, State> {
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <FormControl>
-                            <Avatar src={"https://github.com/".concat(this.state.github ? this.state.github : "github").concat(".png?size=200")} showBorder width="100px" height="100px"/>
+                            <Avatar mr="10" src={"https://github.com/".concat(this.state.github ? this.state.github : "github").concat(".png?size=200")} showBorder width="100px" height="100px"/>
+                            {this.state.phone &&
+                                <Button backgroundColor="green.500" color="whiteAlpha.900" mt={10} mr={3} size="sm" fontSize="2xl">
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://wa.me/".concat(this.state.phone.replace(/[^0-9]/g, ''))}><IoLogoWhatsapp /></a>
+                                </Button>
+                            }
+                            {this.state.github &&
+                                <Button backgroundColor="gray.900" color="whiteAlpha.900" mt={10} mr={3} size="sm" fontSize="2xl">
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://github.com/".concat(this.state.github)}><IoLogoGithub /></a>
+                                </Button>
+                            }
+
+                            {this.state.linkedin &&
+                                <Button backgroundColor="blue.500" color="whiteAlpha.900" mt={10} mr={3} size="sm" fontSize="2xl">
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://br.linkedin.com/in/".concat(this.state.linkedin)}><IoLogoLinkedin /></a>
+                                </Button>
+                            }
                         </FormControl>
                         <FormControl>
                             <FormLabel pt={10}>Name</FormLabel>
@@ -207,64 +222,74 @@ class Member extends React.Component<Props, State> {
                         <FormControl>
                             <FormLabel pt={10} display="flex">Skills</FormLabel>
                             {(this.state.mode === "INS" || this.state.mode === "UPD") &&
-                                <div>
-                                    <Input type="text" name="skillname" placeholder="Name" display="inline" width="60%" onChange={this.updateInput} value={this.state.skillname} />
-                                    <Input type="number" name="skillvalue" placeholder="Value" display="inline" width="20%" onChange={this.updateInput} value={this.state.skillvalue} />
-                                    <Button display="inline" variantColor="green" onClick={this.addSkill}>+</Button>
-                                </div>
+                                 <table style={{width: '100%'}}>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <Input type="text" name="skillname" placeholder="Name"  onChange={this.updateInput} value={this.state.skillname} />
+                                            </td>  
+                                            <td className="col-value"> 
+                                                <Input type="number" name="skillvalue" placeholder="Value" onChange={this.updateInput} value={this.state.skillvalue} />
+                                            </td>
+                                            <td>   
+                                                <Button display="inline" variantColor="green" onClick={this.addSkill}>+</Button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             }
-                            <List>
-                            {this.state.skills.map((s, index) =>
-                                <div key={"div" + index}>
-                                    <ListItem display="inline" key={index}> - {s.name} ({s.value}/5)</ListItem>
-                                    {(this.state.mode === "INS" || this.state.mode === "UPD") &&
-                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
-                                    }
-                                    </div>
-                            )}
-                            </List>
+                            <table className="table">
+                                <tbody>
+                                    {this.state.skills.map((s, index) =>
+                                        <tr key={"div" + index}>
+                                            <td key={index}>&nbsp;&nbsp;&nbsp;{s.name}</td>
+                                            <td key={"v" + index}>({s.value}/5)</td>
+                                            {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                                <td>
+                                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
+                                                </td>
+                                            }
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Wanna Work With</FormLabel>
                             {(this.state.mode === "INS" || this.state.mode === "UPD") &&
-                                <div>
-                                    <Input type="text" name="wwwdesc" placeholder="Name" display="inline" width="80%" onChange={this.updateInput} value={this.state.wwwdesc} />
-                                    <Button display="inline" variantColor="green" onClick={this.addWww}>+</Button>
-                                </div>
+                                <table className="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <Input type="text" name="wwwdesc" placeholder="Description" display="inline" onChange={this.updateInput} value={this.state.wwwdesc} />
+                                            </td>
+                                            <td>
+                                                <Button display="inline" variantColor="green" onClick={this.addWww}>+</Button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             }
-                            <List>
-                            {this.state.www.map((w, index) =>
-                                <div key={"div" + index}>
-                                    <ListItem display="inline" key={index}> - {w}</ListItem>
-                                    {(this.state.mode === "INS" || this.state.mode === "UPD") &&
-                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
-                                    }
-                                </div>
-                             )}
-                            </List>
+                            <table className="table">
+                                <tbody>
+                                    {this.state.www.map((w, index) =>
+                                        <tr key={"div" + index}>
+                                            <td key={index}>&nbsp;&nbsp;&nbsp;{w}</td>
+                                            {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                                <td>
+                                                    <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                                </td>
+                                            }
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </FormControl>    
                         <FormControl>
                             <FormLabel pt={10}>Observation</FormLabel>
                             <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
                         </FormControl>    
                         <FormControl>
-                            {this.state.phone &&
-                                <Button size="sm" backgroundColor="green.500" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://wa.me/".concat(this.state.phone.replace(/[^0-9]/g, ''))}>WhatsApp</a>
-                                </Button>
-                            }
-                            {this.state.github &&
-                                <Button size="sm" backgroundColor="gray.900" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://github.com/".concat(this.state.github)}>GitHub</a>
-                                </Button>
-                            }
-
-                            {this.state.linkedin &&
-                                <Button size="sm" backgroundColor="blue.500" color="whiteAlpha.900" mt={10} mr={5} leftIcon="external-link">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://br.linkedin.com/in/".concat(this.state.linkedin)}>LinkedIn</a>
-                                </Button>
-                            }
-
                             {this.state.showAlert &&
                                 <Alert mt={10} status="success" mb="10">
                                     <AlertIcon />
