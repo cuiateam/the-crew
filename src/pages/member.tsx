@@ -74,6 +74,7 @@ class Member extends React.Component<Props, State> {
             obs: this.state.obs
         }).then((docRef) => {
             this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP', id: docRef.id})
+            window.scroll(0,0)
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -93,6 +94,7 @@ class Member extends React.Component<Props, State> {
             obs: this.state.obs
         }).then(() => {
             this.setState({alertMessage: "Member updated with success!", showAlert: true, mode: 'DSP'})
+            window.scroll(0,0)
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -179,6 +181,12 @@ class Member extends React.Component<Props, State> {
                     <Heading>Member</Heading>
                 </Flex>
                 <Divider borderColor="blackAlpha.500" mt={10}/>
+                {this.state.showAlert &&
+                    <Alert status="success" mb="10" mt="-5" display="flex" justifyContent="center" alignItems="center">
+                        <AlertIcon />
+                        {this.state.alertMessage}
+                    </Alert>
+                }
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <FormControl>
@@ -291,13 +299,6 @@ class Member extends React.Component<Props, State> {
                             <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
                         </FormControl>    
                         <FormControl>
-                            {this.state.showAlert &&
-                                <Alert mt={10} status="success" mb="10">
-                                    <AlertIcon />
-                                    {this.state.alertMessage}
-                                </Alert>
-                            }
-
                             <Divider borderColor="blackAlpha.500" mt={10}/>
 
                             {this.state.mode === "INS" &&
