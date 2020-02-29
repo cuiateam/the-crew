@@ -2,15 +2,21 @@
     width: 100%;
 }
 
+.btnAddMember {
+    margin-left: auto;
+}
+
 .content {
-    min-height: calc(100vh - 100px);
-  }
+    min-height: calc(100vh - 90px);
+}
 
 .footer {
     height: 50px;
     left: 0;
     right: 0;
     text-align: center;
+    /* bottom: 1vh; */
+    /* margin-top: auto; */
 }
 
 .footer svg {
