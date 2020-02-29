@@ -28,7 +28,7 @@ function NotFound() {
 
             <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                 <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
-                    <Image src={TheCrew} alt="The Crew" />
+                    <Image src={TheCrew} alt="The Crew" className="center"/>
                     <Text style={{textAlign: 'center'}} fontSize="6xl">The Crew</Text>
                     <Text style={{textAlign: 'center'}} fontSize="1xl">
                         Find your way &nbsp;
