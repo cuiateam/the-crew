@@ -1,6 +1,6 @@
 import React from 'react'
 import Firebase from '../config/firebase'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp } from 'react-icons/io'
 import {
     ThemeProvider,
@@ -23,7 +23,7 @@ import {
 
 interface Skill { name: String, value: number }
 interface Props { mode?: string, id?: string }
-interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string}
+interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string, redirect?: boolean}
 const db = Firebase.firestore()
 
 class Member extends React.Component<Props, State> {
@@ -48,7 +48,8 @@ class Member extends React.Component<Props, State> {
             alertMessage: "",
             showAlert: false,
             id: propsAux.match.params.id,
-            mode: propsAux.match.params.id === '0' ? 'INS' : 'DSP'
+            mode: propsAux.match.params.id === '0' ? 'INS' : 'DSP',
+            redirect: false
         }
         if(this.state.mode !== "INS")
             this.loadMember()
@@ -74,6 +75,7 @@ class Member extends React.Component<Props, State> {
             obs: this.state.obs
         }).then((docRef) => {
             this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP', id: docRef.id})
+            window.scroll(0,0)
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -93,6 +95,7 @@ class Member extends React.Component<Props, State> {
             obs: this.state.obs
         }).then(() => {
             this.setState({alertMessage: "Member updated with success!", showAlert: true, mode: 'DSP'})
+            window.scroll(0,0)
         }).then(() => setTimeout(() =>{
             this.setState({alertMessage: "", showAlert: false})
         }, 2000))
@@ -167,11 +170,16 @@ class Member extends React.Component<Props, State> {
                     www: (m.data().www ? m.data().www : this.state.www),
                     obs: (m.data().obs ? m.data().obs : this.state.obs)
                 })
+            } else {
+                this.setState({redirect: true})
             }
         })
     }
 
     render() {
+        if (this.state.redirect === true) {
+            return <Redirect to='/404' />
+        }
         return (
             <ThemeProvider theme={theme}>
                 <CSSReset />
@@ -179,6 +187,12 @@ class Member extends React.Component<Props, State> {
                     <Heading>Member</Heading>
                 </Flex>
                 <Divider borderColor="blackAlpha.500" mt={10}/>
+                {this.state.showAlert &&
+                    <Alert status="success" mb="10" mt="-5" display="flex" justifyContent="center" alignItems="center">
+                        <AlertIcon />
+                        {this.state.alertMessage}
+                    </Alert>
+                }
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <FormControl>
@@ -291,13 +305,6 @@ class Member extends React.Component<Props, State> {
                             <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
                         </FormControl>    
                         <FormControl>
-                            {this.state.showAlert &&
-                                <Alert mt={10} status="success" mb="10">
-                                    <AlertIcon />
-                                    {this.state.alertMessage}
-                                </Alert>
-                            }
-
                             <Divider borderColor="blackAlpha.500" mt={10}/>
 
                             {this.state.mode === "INS" &&
