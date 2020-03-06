@@ -69,7 +69,6 @@ class App extends React.Component<Props, State> {
             isConfirmDialogOpen: false
         })
 
-        console.log('Executou')
     }
 
     render() {

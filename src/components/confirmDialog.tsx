@@ -33,7 +33,7 @@ function ConfirmDialog (props: Props){
                     </AlertDialogBody>
 
                     <AlertDialogFooter>
-                        <Button onClick={props.handleCLickClose}>Cancel</Button>
+                        <Button mr="5" onClick={props.handleCLickClose}>Cancel</Button>
                         <Button backgroundColor="messenger.500" color="whiteAlpha.900" onClick={props.handleCLick}>Confirm</Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
