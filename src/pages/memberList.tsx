@@ -2,6 +2,9 @@ import React from 'react'
 import Firebase from '../config/firebase'
 import { Link } from 'react-router-dom'
 import '../css/main.css'
+
+import ConfirmDialog from '../components/confirmDialog'
+
 import {
     ThemeProvider,
     CSSReset,
@@ -18,17 +21,20 @@ import {
 interface Skill { name: String, value: number }
 interface Props { }
 interface Member { id?: string, name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string }
-interface State { memberList?: Member[] }
+interface State { memberList?: Member[], isConfirmDialogOpen?: boolean, rowId?: string}
 const db: any = Firebase.firestore()
 
 class App extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
         this.state = {
-            memberList: []
+            memberList: [],
+            isConfirmDialogOpen: false,
+            rowId: ''
         }
 
         let member: Member
+        this.deleteMember = this.deleteMember.bind(this)
 
         db.collection("Members").get().then((querySnapshot) => {
             querySnapshot.forEach((m) => {
@@ -51,12 +57,19 @@ class App extends React.Component<Props, State> {
         })
     }
 
-    deleteMember(id: string) {
-        db.collection("Members").doc(id).delete()
+    openConfirmDialog (id: string) {
+        this.setState({rowId: id, isConfirmDialogOpen: true})
+    }
+
+    deleteMember() {
+        db.collection("Members").doc(this.state.rowId).delete()
 
         this.setState({
-            memberList: this.state.memberList.filter(m => m.id.trim() !== id.trim())
+            memberList: this.state.memberList.filter(m => m.id.trim() !== this.state.rowId.trim()),
+            isConfirmDialogOpen: false
         })
+
+        console.log('Executou')
     }
 
     render() {
@@ -71,6 +84,12 @@ class App extends React.Component<Props, State> {
                 
                 <Divider borderColor="blackAlpha.500" mt={10}/>
                 
+                <ConfirmDialog title="Delete Member" 
+                    description="Are you sure? You can't undo this action afterwards!" 
+                    isOpen={this.state.isConfirmDialogOpen} 
+                    handleCLick={this.deleteMember} 
+                    handleCLickClose={() => this.setState({isConfirmDialogOpen: false})}/>
+
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <table className="table">
@@ -82,7 +101,7 @@ class App extends React.Component<Props, State> {
                                             <Link to={`/member/${m.id}`}>{m.name}</Link>
                                         </td>
                                         <td className="col-Button">
-                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.deleteMember(m.id)} >x</Button>
+                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.openConfirmDialog(m.id)} >x</Button>
                                         </td>
                                     </tr>
                                     )
