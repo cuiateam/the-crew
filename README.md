@@ -25,7 +25,7 @@ Team members information Web App.
    cp .env .env.local
    ```
 
-5. Place your Firebase credentials on local environment variables file:
+5. Place your Firebase credentials in local environment variables file:
 
    > See more about Firebase Configuration [here](https://firebase.google.com/docs/web/setup#config-object).
 
