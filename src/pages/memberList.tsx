@@ -21,7 +21,7 @@ import {
 interface Skill { name: String, value: number }
 interface Props { }
 interface Member { id?: string, name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, skills?: Skill[], www?: string[], obs?: string }
-interface State { memberList?: Member[], isConfirmDialogOpen?: boolean, rowId?: string}
+interface State { memberList?: Member[], isConfirmDialogOpen?: boolean, rowId?: string, rowValue?: string}
 const db: any = Firebase.firestore()
 
 class App extends React.Component<Props, State> {
@@ -30,7 +30,8 @@ class App extends React.Component<Props, State> {
         this.state = {
             memberList: [],
             isConfirmDialogOpen: false,
-            rowId: ''
+            rowId: '',
+            rowValue: ''
         }
 
         let member: Member
@@ -57,8 +58,8 @@ class App extends React.Component<Props, State> {
         })
     }
 
-    openConfirmDialog (id: string) {
-        this.setState({rowId: id, isConfirmDialogOpen: true})
+    openConfirmDialog (id: string, name: string) {
+        this.setState({rowId: id, rowValue: name.replace(/ .*/,'').toUpperCase(), isConfirmDialogOpen: true})
     }
 
     deleteMember() {
@@ -84,7 +85,7 @@ class App extends React.Component<Props, State> {
                 <Divider borderColor="blackAlpha.500" mt={10}/>
                 
                 <ConfirmDialog title="Delete Member" 
-                    description="Are you sure? You can't undo this action afterwards!" 
+                    description={`Are you sure to delete ${this.state.rowValue}? You can't undo this action afterwards!`}
                     isOpen={this.state.isConfirmDialogOpen} 
                     handleCLick={this.deleteMember} 
                     handleCLickClose={() => this.setState({isConfirmDialogOpen: false})}/>
@@ -100,7 +101,7 @@ class App extends React.Component<Props, State> {
                                             <Link to={`/member/${m.id}`}>{m.name}</Link>
                                         </td>
                                         <td className="col-Button">
-                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.openConfirmDialog(m.id)} >x</Button>
+                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.openConfirmDialog(m.id, m.name)} >x</Button>
                                         </td>
                                     </tr>
                                     )
