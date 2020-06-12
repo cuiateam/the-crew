@@ -1,6 +1,7 @@
 import React from 'react'
 import Firebase from '../config/firebase'
 import { Link, Redirect } from 'react-router-dom'
+import StarRating from '../components/starRating'
 import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp, IoIosGlobe } from 'react-icons/io'
 import {
     ThemeProvider,
@@ -35,6 +36,7 @@ class Member extends React.Component<Props, State> {
         super(props)
 
         let propsAux: any = this.props
+        this.onStarClick = this.onStarClick.bind(this)
 
         this.state = {
             name: "",
@@ -116,9 +118,17 @@ class Member extends React.Component<Props, State> {
         let value: number = this.state.skillvalue
         let skillAux: Skill = {name, value}
         let skillsAux: Skill[] = this.state.skills
+        let update: boolean = false
 
-        skillsAux = skillsAux.filter(s => s.name.trim() !== this.state.skillname.trim())
-        skillsAux.push(skillAux)
+        skillsAux.forEach(s => {
+            if(s.name.trim() === this.state.skillname.trim()){
+                s.value = this.state.skillvalue
+                update = true
+            }
+        })
+
+        if (!update)
+            skillsAux.push(skillAux)
 
         this.setState({
             skills: skillsAux,
@@ -169,6 +179,10 @@ class Member extends React.Component<Props, State> {
                 this.setState({redirect: true})
             }
         })
+    }
+
+    onStarClick(nextValue, prevValue, name) {
+        this.setState({skillvalue: nextValue});
     }
 
     render() {
@@ -255,14 +269,14 @@ class Member extends React.Component<Props, State> {
                             <FormControl>
                                 <FormLabel pt={10} display="flex">Skills</FormLabel>
                                 {(this.state.mode === "INS" || this.state.mode === "UPD") &&
-                                    <table style={{width: '100%'}}>
+                                    <table className="table">
                                         <tbody>
                                             <tr>
                                                 <td>
                                                     <Input type="text" name="skillname" placeholder="Name"  onChange={this.updateInput} value={this.state.skillname} />
                                                 </td>  
                                                 <td className="col-value"> 
-                                                    <Input type="number" name="skillvalue" placeholder="Value" onChange={this.updateInput} value={this.state.skillvalue} />
+                                                    <StarRating name="skill" emptyStarColor="gray" value={this.state.skillvalue} editing={true} onStarClick={this.onStarClick} />
                                                 </td>
                                                 <td>   
                                                     <Button display="inline" variantColor="green" onClick={this.addSkill}>+</Button>
@@ -271,12 +285,14 @@ class Member extends React.Component<Props, State> {
                                         </tbody>
                                     </table>
                                 }
-                                <table className="table">
+                                <table >
                                     <tbody>
                                         {this.state.skills.map((s, index) =>
                                             <tr key={"div" + index}>
+                                                <td key={"v" + index}>
+                                                    <StarRating name={"s" + index} emptyStarColor="gray" value={s.value} editing={this.state.mode !== "DSP"}/>
+                                                </td>
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{s.name}</td>
-                                                <td key={"v" + index}>({s.value}/5)</td>
                                                 {(this.state.mode === "INS" || this.state.mode === "UPD") &&
                                                     <td>
                                                         <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
