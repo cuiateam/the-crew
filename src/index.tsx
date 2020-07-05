@@ -2,6 +2,7 @@ import './css/main.css'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
+import Login from './pages/login'
 import NotFound from './pages/notFound'
 import Member from './pages/member'
 import MemberList from './pages/memberList'
@@ -13,6 +14,7 @@ ReactDOM.render(
         <div className="content">
             <Switch>
                 <Route path="/" exact={true} component={MemberList} />
+                <Route path="/login" component={Login} />
                 <Route path="/member/:id" component={(props) => <Member {...props}/>} />
                 <Route path="*" component={NotFound} />
             </Switch>
