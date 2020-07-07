@@ -22,6 +22,7 @@ import {
     Textarea, 
     Select
 } from '@chakra-ui/core'
+import DarkModeToggle from '../components/darkModeToggle'
 
 
 enum Role { Developer, Consultant, Admin }
@@ -194,8 +195,11 @@ class Member extends React.Component<Props, State> {
                 <CSSReset />
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
+                    <div className="btnDarkModeToggle">
+                        <DarkModeToggle />
+                    </div>
                 </Flex>
-                <Divider borderColor="blackAlpha.500" mt={10}/>
+                <Divider mt={10}/>
                 {this.state.showAlert &&
                     <Alert status="success" mb="10" mt="-5" display="flex" justifyContent="center" alignItems="center">
                         <AlertIcon />
@@ -328,7 +332,7 @@ class Member extends React.Component<Props, State> {
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{w}</td>
                                                 {(this.state.mode === "INS" || this.state.mode === "UPD") &&
                                                     <td>
-                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" mt="5" onClick={e => this.deleteWww(w)} >x</Button>
                                                     </td>
                                                 }
                                             </tr>
@@ -351,8 +355,8 @@ class Member extends React.Component<Props, State> {
                                 )}
                             </Select>
                         </FormControl>  
-                        <FormControl>
-                            <Divider borderColor="blackAlpha.500" mt={10}/>
+                        <FormControl className="group-button">
+                            <Divider mt={10}/>
 
                             {this.state.mode === "INS" &&
                                 <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">

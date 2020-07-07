@@ -1,13 +1,62 @@
+  /* 
+        Dracula Color Palette
+
+        Background	#282a36	
+        Current Line	#44475a	
+        Foreground	#f8f8f2	
+        Comment	    #6272a4	
+        Cyan	        #8be9fd	
+        Green	        #50fa7b	
+        Orange	    #ffb86c	
+        Pink	        #ff79c6	
+        Purple	    #bd93f9	
+        Red	        #ff5555	
+        Yellow	    #f1fa8c 
+  */
+
+:root {
+    --dark-bg-color: #282a36;
+    --light-bg-color: #f8f8f2;
+}
+
+.dark-mode{
+    background-color: var(--dark-bg-color);
+    color: var(--light-bg-color);
+}
+
+.light-mode {
+    background-color: var(--light-bg-color);
+    color: var(--dark-bg-color);
+}
+
+input, select {
+    background-color: white !important;
+    color: black !important;
+}
+
+input:disabled, input:read-only, select:disabled{
+    background-color: lightgray !important;
+    color: var(--dark-bg-color) !important;
+}
+
 .table tr td{
     width: 100%;
 }
 
-.btnAddMember {
+.line {
+    height: 50px;
+}
+
+.btnAddMember, .btnDarkModeToggle {
     margin-left: auto;
 }
 
 .content {
     min-height: calc(100vh - 90px);
+}
+
+.group-button {
+    text-align: center;
 }
 
 .footer {
@@ -31,6 +80,3 @@
     margin-right: auto;
     width: 50%;
   }
-
-
-
