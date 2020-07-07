@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import '../css/main.css'
 
 import ConfirmDialog from '../components/confirmDialog'
+import DarkModeToggle from '../components/darkModeToggle'
 
 import {
     ThemeProvider,
@@ -80,9 +81,10 @@ class App extends React.Component<Props, State> {
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>The Crew</Heading>
                     <Button className="btnAddMember" variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
+                    <DarkModeToggle />
                 </Flex>
                 
-                <Divider borderColor="blackAlpha.500" mt={10}/>
+                <Divider mt={10}/>
                 
                 <ConfirmDialog title="Delete Member" 
                     description={`Are you sure to delete ${this.state.rowValue}? You can't undo this action afterwards!`}
@@ -96,12 +98,14 @@ class App extends React.Component<Props, State> {
                             <tbody>
                                 {
                                     this.state.memberList.map((m, index) => 
-                                    <tr key={"div" + index}>
+                                    <tr key={"div" + index} className="line" >
                                         <td className="col-Name" key={index}>
-                                            <Link to={`/member/${m.id}`}>{m.name}</Link>
+                                            <strong>
+                                                <Link to={`/member/${m.id}`}>{m.name}</Link>
+                                            </strong>
                                         </td>
                                         <td className="col-Button">
-                                            <Button key={"bt" + index} size="xs" variantColor="red"  onClick={e => this.openConfirmDialog(m.id, m.name)} >x</Button>
+                                            <Button key={"bt" + index} size="xs" variantColor="red" onClick={e => this.openConfirmDialog(m.id, m.name)} >x</Button>
                                         </td>
                                     </tr>
                                     )

@@ -14,6 +14,7 @@ import {
     Text,
     Button
 } from '@chakra-ui/core'
+import DarkModeToggle from '../components/darkModeToggle'
 
 function NotFound() {
     return (
@@ -22,9 +23,12 @@ function NotFound() {
 
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>404 - Page Not Found</Heading>
+                <div className="btnDarkModeToggle">
+                    <DarkModeToggle />
+                </div>
             </Flex>
 
-            <Divider borderColor="blackAlpha.500" mt={10} />
+            <Divider mt={10} />
 
             <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                 <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
