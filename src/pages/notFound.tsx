@@ -23,7 +23,7 @@ function NotFound() {
 
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>404 - Page Not Found</Heading>
-                <div className="btnDarkModeToggle">
+                <div className="btn-dark-mode-toggle">
                     <DarkModeToggle />
                 </div>
             </Flex>

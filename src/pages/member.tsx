@@ -221,7 +221,7 @@ class Member extends React.Component<Props, State> {
                 <CSSReset />
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
-                    <div className="btnDarkModeToggle">
+                    <div className="btn-dark-mode-toggle">
                         <DarkModeToggle />
                     </div>
                 </Flex>
@@ -381,17 +381,17 @@ class Member extends React.Component<Props, State> {
                                 )}
                             </Select>
                         </FormControl>  
-                        <FormControl className="group-button">
-                            <Divider mt={10}/>
+                        <FormControl className="group-button" mb={10}>
+                            <Divider mt={10} mb={10} />
 
                             {this.state.mode === "INS" &&
-                                <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
                             {this.state.mode === "UPD" &&
-                                <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
                                     Save
                                 </Button>
                             }

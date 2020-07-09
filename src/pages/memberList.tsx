@@ -80,7 +80,7 @@ class App extends React.Component<Props, State> {
                 
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>The Crew</Heading>
-                    <Button className="btnAddMember" variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
+                    <Button className="btn-add-member" variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
                     <DarkModeToggle />
                 </Flex>
                 
