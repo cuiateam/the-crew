@@ -31,6 +31,7 @@ interface Props { mode?: string, id?: string }
 interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, site?: string, skills?: Skill[], www?: string[], obs?: string, role?: Role, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string, redirect?: boolean}
 const db = Firebase.firestore()
 const roles: string[] = ["Developer", "Consultant", "Admin"]
+let memberRef = undefined
 
 class Member extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -57,11 +58,13 @@ class Member extends React.Component<Props, State> {
             alertMessage: "",
             showAlert: false,
             id: propsAux.match.params.id,
-            mode: propsAux.match.params.id === '0' ? 'INS' : 'DSP',
+            mode: propsAux.match.params.id === "0" ? "INS" : "DSP",
             redirect: false
         }
-        if(this.state.mode !== "INS")
+        if(this.state.mode !== "INS"){
+            memberRef = db.collection("Members").doc(this.state.id)
             this.loadMember()
+        }
     }
 
     updateInput = e => {
@@ -158,9 +161,26 @@ class Member extends React.Component<Props, State> {
         this.setState({www: wwwAux})
     }
 
-    loadMember = () => {
-        let memberRef = db.collection("Members").doc(this.state.id)
+    cleanMember = () => {
+        this.setState({
+            name: "",
+            phone: "",
+            phoneaux: "",
+            email: "",
+            github: "",
+            linkedin: "",
+            site: "",
+            skills: [],
+            www: [],
+            obs: "",
+            role: Role.Developer,
+            skillname: "",
+            skillvalue: 0,
+            wwwdesc: "",
+        })
+    }
 
+    loadMember = () => {
         memberRef.get().then((m: any) => {
             if(m.exists){
                 this.setState({
@@ -180,6 +200,12 @@ class Member extends React.Component<Props, State> {
                 this.setState({redirect: true})
             }
         })
+    }
+
+    cancelEdit = () => {
+        this.cleanMember()
+        this.loadMember()
+        this.setState({mode: "DSP"})
     }
 
     onStarClick(nextValue, prevValue, name) {
@@ -371,7 +397,7 @@ class Member extends React.Component<Props, State> {
                             }
 
                             {this.state.mode === "UPD" &&
-                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'DSP'})} leftIcon="close">
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.cancelEdit} leftIcon="close">
                                     Cancel
                                 </Button>
                             }
