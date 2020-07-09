@@ -1,42 +1,78 @@
-  /* 
-        Dracula Color Palette
-
-        Background	#282a36	
-        Current Line	#44475a	
-        Foreground	#f8f8f2	
-        Comment	    #6272a4	
-        Cyan	        #8be9fd	
-        Green	        #50fa7b	
-        Orange	    #ffb86c	
-        Pink	        #ff79c6	
-        Purple	    #bd93f9	
-        Red	        #ff5555	
-        Yellow	    #f1fa8c 
-  */
-
 :root {
-    --dark-bg-color: #282a36;
-    --light-bg-color: #f8f8f2;
+    --dark1: #282a36;
+    --dark2: #44475a;
+    --dark3: #6272a4;
+    --light1: #f8f8f2;
+    --cyan: #8be9fd	;
+    --green: #50fa7b;
+    --orange: #ffb86c;
+    --pink: #ff79c6;
+    --purple: #bd93f9;
+    --red: #ff5555;
+    --yellow: #f1fa8c;
 }
 
-.dark-mode{
-    background-color: var(--dark-bg-color);
-    color: var(--light-bg-color);
+body.dark-mode{
+    background-color: var(--dark1);
+    color: var(--light1);
 }
 
-.light-mode {
-    background-color: var(--light-bg-color);
-    color: var(--dark-bg-color);
+body.light-mode {
+    background-color: var(--light1);
+    color: var(--dark1);
 }
 
-input, select {
-    background-color: white !important;
-    color: black !important;
+body.dark-mode input, 
+body.dark-mode select, 
+body.dark-mode textarea{
+    background-color: var(--dark2);
+    color: var(--light1);
+    border-color: var(--dark3);
 }
 
-input:disabled, input:read-only, select:disabled{
-    background-color: lightgray !important;
-    color: var(--dark-bg-color) !important;
+body.light-mode input, 
+body.light-mode select, 
+body.light-mode textarea{
+    background-color: white;
+    color: var(--dark1);
+}
+
+body.dark-mode input:disabled, 
+body.dark-mode input:read-only, 
+body.dark-mode select:disabled, 
+body.dark-mode textarea:disabled, 
+body.dark-mode textarea:read-only {
+    background-color: var(--dark1);
+    color: var(--light1);
+    border-color: transparent;
+}
+
+body.light-mode input:disabled, 
+body.light-mode input:read-only, 
+body.light-mode select:disabled, 
+body.light-mode textarea:disabled, 
+body.light-mode textarea:read-only {
+    background-color: var(--light1);
+    color: var(--dark1);
+    border-color: transparent;
+}
+
+input:disabled:hover, 
+input:read-only:hover, 
+select:disabled:hover, 
+select[aria-disabled=true]:hover, 
+textarea:disabled:hover, 
+textarea:read-only:hover {
+    cursor: unset !important;
+    border-color: transparent;
+}
+ body.dark-mode hr {
+     color: var(--dark3);
+     border-color: var(--dark3);
+ }
+
+label {
+    font-weight: bold !important;    
 }
 
 .table tr td{
@@ -47,8 +83,24 @@ input:disabled, input:read-only, select:disabled{
     height: 50px;
 }
 
-.btnAddMember, .btnDarkModeToggle {
+.btn-add-member, .btn-dark-mode-toggle {
     margin-left: auto;
+}
+
+.btn-dark-mode svg{
+    color: var(--dark3);
+}
+
+.btn-light-mode svg{
+    color: var(--yellow);
+}
+
+.btn-dark-mode:hover svg{
+    color: var(--purple);
+}
+
+.btn-light-mode:hover svg{
+    color: var(--dark2);
 }
 
 .content {

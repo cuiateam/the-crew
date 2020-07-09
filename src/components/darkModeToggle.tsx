@@ -25,13 +25,13 @@ function DarkModeToggle () {
     return (
         <div>
             {mode === 'dark' &&
-                <Button onClick={() => setMode('light')} variant="ghost" >
-                    <IoIosSunny />
+                <Button className="btn-light-mode" onClick={() => setMode('light')} variant="ghost" >
+                    <IoIosSunny size="30px" />
                 </Button>
             }
             {mode === 'light' &&
-                <Button onClick={() => setMode('dark')} variant="ghost" >
-                    <IoIosMoon />
+                <Button className="btn-dark-mode" onClick={() => setMode('dark')} variant="ghost" >
+                    <IoIosMoon size="30px"/>
                 </Button>
             }            
         </div>
