@@ -31,6 +31,7 @@ interface Props { mode?: string, id?: string }
 interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, site?: string, skills?: Skill[], www?: string[], obs?: string, role?: Role, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string, redirect?: boolean}
 const db = Firebase.firestore()
 const roles: string[] = ["Developer", "Consultant", "Admin"]
+let memberRef = undefined
 
 class Member extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -57,11 +58,13 @@ class Member extends React.Component<Props, State> {
             alertMessage: "",
             showAlert: false,
             id: propsAux.match.params.id,
-            mode: propsAux.match.params.id === '0' ? 'INS' : 'DSP',
+            mode: propsAux.match.params.id === "0" ? "INS" : "DSP",
             redirect: false
         }
-        if(this.state.mode !== "INS")
+        if(this.state.mode !== "INS"){
+            memberRef = db.collection("Members").doc(this.state.id)
             this.loadMember()
+        }
     }
 
     updateInput = e => {
@@ -158,9 +161,26 @@ class Member extends React.Component<Props, State> {
         this.setState({www: wwwAux})
     }
 
-    loadMember = () => {
-        let memberRef = db.collection("Members").doc(this.state.id)
+    cleanMember = () => {
+        this.setState({
+            name: "",
+            phone: "",
+            phoneaux: "",
+            email: "",
+            github: "",
+            linkedin: "",
+            site: "",
+            skills: [],
+            www: [],
+            obs: "",
+            role: Role.Developer,
+            skillname: "",
+            skillvalue: 0,
+            wwwdesc: "",
+        })
+    }
 
+    loadMember = () => {
         memberRef.get().then((m: any) => {
             if(m.exists){
                 this.setState({
@@ -182,6 +202,12 @@ class Member extends React.Component<Props, State> {
         })
     }
 
+    cancelEdit = () => {
+        this.cleanMember()
+        this.loadMember()
+        this.setState({mode: "DSP"})
+    }
+
     onStarClick(nextValue, prevValue, name) {
         this.setState({skillvalue: nextValue});
     }
@@ -195,7 +221,7 @@ class Member extends React.Component<Props, State> {
                 <CSSReset />
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
-                    <div className="btnDarkModeToggle">
+                    <div className="btn-dark-mode-toggle">
                         <DarkModeToggle />
                     </div>
                 </Flex>
@@ -355,23 +381,23 @@ class Member extends React.Component<Props, State> {
                                 )}
                             </Select>
                         </FormControl>  
-                        <FormControl className="group-button">
-                            <Divider mt={10}/>
+                        <FormControl className="group-button" mb={10}>
+                            <Divider mt={10} mb={10} />
 
                             {this.state.mode === "INS" &&
-                                <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
                             {this.state.mode === "UPD" &&
-                                <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
                             {this.state.mode === "UPD" &&
-                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'DSP'})} leftIcon="close">
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.cancelEdit} leftIcon="close">
                                     Cancel
                                 </Button>
                             }

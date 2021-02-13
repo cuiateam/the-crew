@@ -20,9 +20,8 @@ ReactDOM.render(
             </Switch>
         </div>
         <div className="footer">
-            <hr />
             Fork me on <a href="https://github.com/cuiateam/the-crew" target="blank" ><IoLogoGithub />.</a><br /> 
-            Made with <IoMdHeart /> by <a href="https://cuiateam.github.io/site/" target="blank">Cuia Team.</a>
+            Made with <IoMdHeart color="#ff5555" /> by <a href="https://cuiateam.github.io/site/" target="blank">Cuia Team.</a>
         </div>
     </ BrowserRouter>
     , document.getElementById('root'));

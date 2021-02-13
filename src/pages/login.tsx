@@ -23,12 +23,12 @@ function Login() {
 
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>Login</Heading>
-                <div className="btnDarkModeToggle">
+                <div className="btn-dark-mode-toggle">
                     <DarkModeToggle />
                 </div>
             </Flex>
 
-            <Divider mt={10} />
+            <Divider mt={10}/>
 
             <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                 <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
@@ -41,7 +41,7 @@ function Login() {
                         <Input type="password" name="password" />
                     </FormControl>
                     <FormControl className="group-button">
-                        <Divider borderColor="blackAlpha.500" mt={10}/>
+                        <Divider borderColor="blackAlpha.500" mt={10} mb={10} />
                         <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock">
                             Log In
                         </Button>
