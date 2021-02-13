@@ -16,7 +16,7 @@ Team members information Web App.
 3. Install the dependencies:
 
    ```
-   npm install 
+   yarn install 
    ```
 
 4. Create local environment variables file:
