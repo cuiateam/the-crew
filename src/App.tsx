@@ -7,23 +7,24 @@ import MemberList from './pages/memberList'
 import { Route, Switch, BrowserRouter }from 'react-router-dom'
 import { IoMdHeart, IoLogoGithub } from 'react-icons/io'
 import { UserContext } from './context/UserContext'
+import PrivateRoute from './router/privateRouter'
 
 const App = () => {
   
-  const [userInfo, setUserInfo] = useState({ uid: '', email: '', isSignedIn: false, isAdmin: false })
+  const [userInfo, setUserInfo] = useState({ uid: '', email: '', isAdmin: false })
   
   return(
     <UserContext.Provider value={{ userInfo, setUserInfo }}>
       <BrowserRouter>
           <div className="content">
               <Switch>
-                  {userInfo.isSignedIn && 
-                    <>
-                      <Route path="/" exact={true} component={MemberList} />
-                      <Route path="/member/:id" component={(props) => <Member {...props}/>} />
-                    </>
-                  }
-                  <Route path={["/", "/login", "/member/:id"]} component={Login} />
+                  <PrivateRoute exact path="/">
+                    <MemberList />
+                  </PrivateRoute>
+                  <PrivateRoute path="/member/:id" >
+                    <Route path="/member/:id" component={(props) => <Member {...props}/>} />
+                  </PrivateRoute>
+                  <Route path="/login" component={Login} />
                   <Route path="*" component={NotFound} />
               </Switch>
           </div>

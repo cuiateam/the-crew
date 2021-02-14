@@ -27,24 +27,29 @@ const Login = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string>('')
+    const [isAdmin, setIsAdmin] = useState(false)
 
-    const { setUserInfo } = useUserContext()
+    const { userInfo, setUserInfo } = useUserContext()
     const db: any = Firebase.firestore()
 
     
     const handleSuccesLogin = async (user) => {
-        const query = await db.collection("Members").get()
-        const isAdminAux = query.docs.filter((m) => {
-             return m.data().email === email && m.data().role === "Admin"
-        }).length > 0
+        const query = await db.collection("Members").where("email", "==", user.user.email).get()
+        const hasMember = query.docs.length > 0
+        
+        if (hasMember) {
+            query.docs.forEach((m) => {
+                localStorage.setItem('cttcid', m.id)
+                setIsAdmin(m.data().role === "Admin")
+            })
+        }
 
         setUserInfo({
             uid: user.user.uid,
             email: user.user.email,
-            isSignedIn: true,
-            isAdmin: isAdminAux 
+            isAdmin: isAdmin 
         })
-
+        
         history.push("/")
     }
     const loginEmail = () => {
@@ -57,6 +62,10 @@ const Login = () => {
             .catch((error) => {
                 setErrorMessage(error.message)
             })
+    }
+
+    const signUp = () => {
+        console.log(userInfo)
     }
 
     return (
@@ -90,10 +99,10 @@ const Login = () => {
                     </FormControl>
                     <FormControl className="group-button">
                         <Divider borderColor="blackAlpha.500" mt={10}/>
-                        <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock" onClick={() => loginEmail()}>
+                        <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock" onClick={() => {loginEmail()}}>
                             Log In
                         </Button>
-                        <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square">
+                        <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
                             Sign Up
                         </Button>
                     </FormControl>

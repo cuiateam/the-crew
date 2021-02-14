@@ -5,6 +5,7 @@ import '../css/main.css'
 
 import ConfirmDialog from '../components/confirmDialog'
 import DarkModeToggle from '../components/darkModeToggle'
+import LogoutButton from '../components/logoutButton'
 
 import {
     ThemeProvider,
@@ -82,6 +83,7 @@ class App extends React.Component<Props, State> {
                     <Heading>The Crew</Heading>
                     <Button className="btn-add-member" variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
                     <DarkModeToggle />
+                    <LogoutButton />
                 </Flex>
                 
                 <Divider mt={10}/>
