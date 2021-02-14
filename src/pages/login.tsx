@@ -21,7 +21,7 @@ import Firebase from '../config/firebase'
 import DarkModeToggle from '../components/darkModeToggle'
 import { useUserContext } from '../context/UserContext'
 
-function Login() {
+const Login = () => {
     const history = useHistory()
 
     const [email, setEmail] = useState<string>('')
@@ -29,20 +29,30 @@ function Login() {
     const [errorMessage, setErrorMessage] = useState<string>('')
 
     const { setUserInfo } = useUserContext()
+    const db: any = Firebase.firestore()
 
     
+    const handleSuccesLogin = async (user) => {
+        const query = await db.collection("Members").get()
+        const isAdminAux = query.docs.filter((m) => {
+             return m.data().email === email && m.data().role === "Admin"
+        }).length > 0
+
+        setUserInfo({
+            uid: user.user.uid,
+            email: user.user.email,
+            isSignedIn: true,
+            isAdmin: isAdminAux 
+        })
+
+        history.push("/")
+    }
     const loginEmail = () => {
         setErrorMessage('')
 
         Firebase.auth().signInWithEmailAndPassword(email, password)
             .then((user) => {
-                console.log(user.user.uid)
-                setUserInfo({
-                    uid: user.user.uid,
-                    email: user.user.email,
-                    signedIn: true
-                })
-                history.push("/")
+                handleSuccesLogin(user)
             })
             .catch((error) => {
                 setErrorMessage(error.message)

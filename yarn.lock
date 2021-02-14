@@ -10794,6 +10794,11 @@ stack-utils@^1.0.1:
   dependencies:
     escape-string-regexp "^2.0.0"
 
+star-rating-svg-react-hooks@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/star-rating-svg-react-hooks/-/star-rating-svg-react-hooks-1.0.0.tgz#a62856c4a8d5b88f0419d8a3a692f31a7472a537"
+  integrity sha512-1sXui9fR7bICik7GAS7ZINK7TQjxS947lPPzxt1IjyrRlZml/4H2wQ/Yn2qdYzch7Tof2nbAQBaCH+1SVMemNQ==
+
 static-extend@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/static-extend/-/static-extend-0.1.2.tgz#60809c39cbff55337226fd5e0b520f341f1fb5c6"

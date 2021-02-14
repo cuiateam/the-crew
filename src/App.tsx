@@ -10,14 +10,14 @@ import { UserContext } from './context/UserContext'
 
 const App = () => {
   
-  const [userInfo, setUserInfo] = useState({ uid: '', email: '', signedIn: false })
+  const [userInfo, setUserInfo] = useState({ uid: '', email: '', isSignedIn: false, isAdmin: false })
   
   return(
     <UserContext.Provider value={{ userInfo, setUserInfo }}>
       <BrowserRouter>
           <div className="content">
               <Switch>
-                  {userInfo.signedIn && 
+                  {userInfo.isSignedIn && 
                     <>
                       <Route path="/" exact={true} component={MemberList} />
                       <Route path="/member/:id" component={(props) => <Member {...props}/>} />

@@ -132,3 +132,7 @@ label {
     margin-right: auto;
     width: 50%;
   }
+
+  .starRating>div {
+      display: flex;
+  }
