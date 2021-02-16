@@ -89,6 +89,8 @@ const Member = (props) => {
             setShowAlert(false)
         }, 2000))
 
+        updateEmailList()
+
     }
 
     const updateMember = () => {
@@ -112,7 +114,22 @@ const Member = (props) => {
             setAlertMessage("")
             setShowAlert(false)
         }, 2000))
+
+        updateEmailList()
         
+    }
+
+    const updateEmailList = async () => {
+        await db.collection("Emails").get().then(snapshot => {
+            snapshot.docs.forEach(doc => {
+                doc.ref.delete()
+            })
+        })
+        await db.collection("Members").get().then(snapshot => {
+            snapshot.docs.forEach(async doc => {
+               await db.collection("Emails").add({ email: doc.data().email })
+            })
+        })
     }
 
     const addSkill = () => {
@@ -257,7 +274,7 @@ const Member = (props) => {
                         {(email || mode !== "DSP" ) &&
                             <FormControl>    
                                 <FormLabel pt={10}>E-mail</FormLabel>
-                                <Input type="email" name="email" placeholder="E-mail" isReadOnly={mode === "DSP"} onChange={e => { setEmail(e.target.value) }} value={email} />
+                                <Input type="email" name="email" placeholder="E-mail" isReadOnly={mode === "DSP" || !userInfo.isAdmin} onChange={e => { setEmail(e.target.value) }} value={email} />
                             </FormControl>
                         }    
                         {(github || mode !== "DSP" ) &&
@@ -290,7 +307,7 @@ const Member = (props) => {
                                                 </td>  
                                                 <td className="col-value starRating"> 
                                                     <StarRating name="skill" noOfStars={5} selectedRating={skillValue} setSelectedRating={setSkillValue} starFillColor = {'yellow'}
-                                                        starEmptyColor = {'white'} starBorderColor = {'gray'} starSpacing = {'5px'} isReadOnly = {false} width = {"30"} height = {"30"}
+                                                        starEmptyColor = {'gray'} starBorderColor = {'black'} starSpacing = {'5px'} isReadOnly = {false} width = {"30"} height = {"30"}
                                                     />
                                                 </td>
                                                 <td>   
@@ -306,7 +323,7 @@ const Member = (props) => {
                                             <tr key={"div" + index}>
                                                 <td key={"v" + index} className="starRating">
                                                     <StarRating name={"s" + index} noOfStars={5} selectedRating={s.value} starFillColor = {'yellow'}
-                                                        starEmptyColor = {'white'} starBorderColor = {'gray'} starSpacing = {'5px'} isReadOnly = {true} width = {"30"} height = {"30"}
+                                                        starEmptyColor = {'gray'} starBorderColor = {'black'} starSpacing = {'5px'} isReadOnly = {true} width = {"30"} height = {"30"}
                                                     />
                                                 </td>
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{s.name}</td>

@@ -5,11 +5,18 @@ import {
     Button
 } from '@chakra-ui/core'
 
+import Firebase from '../config/firebase'
+
 function LogoutButton () {
   const history = useHistory()
 
   const logout = () => {
     localStorage.removeItem('cttcid')
+    Firebase.auth().signOut().then(() => {
+      history.push("/login")
+    }).catch(error => {
+      console.log(error)
+    })
     history.push("/login")
   }
 

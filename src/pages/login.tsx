@@ -27,20 +27,20 @@ const Login = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string>('')
-    const [isAdmin, setIsAdmin] = useState(false)
 
-    const { userInfo, setUserInfo } = useUserContext()
+    const { setUserInfo } = useUserContext()
     const db: any = Firebase.firestore()
 
     
     const handleSuccesLogin = async (user) => {
         const query = await db.collection("Members").where("email", "==", user.user.email).get()
         const hasMember = query.docs.length > 0
+        let isAdmin: boolean = false
         
         if (hasMember) {
             query.docs.forEach((m) => {
                 localStorage.setItem('cttcid', m.id)
-                setIsAdmin(m.data().role === "Admin")
+                isAdmin = m.data().role === "Admin"
             })
         }
 
@@ -56,16 +56,33 @@ const Login = () => {
         setErrorMessage('')
 
         Firebase.auth().signInWithEmailAndPassword(email, password)
-            .then((user) => {
+            .then(user => {
                 handleSuccesLogin(user)
             })
-            .catch((error) => {
+            .catch(error => {
                 setErrorMessage(error.message)
             })
     }
 
-    const signUp = () => {
-        console.log(userInfo)
+    const signUp = async () => {
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            const query = await db.collection("Emails").where("email", "==", email).get()
+            const hasMember = query.docs.length > 0
+            
+            if (hasMember) {
+                Firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then(user => {
+                        handleSuccesLogin(user)
+                    }).catch(error => {
+                        setErrorMessage(error)
+                    })
+            } else {
+                setErrorMessage(`Email '${email}' is not allowed to sign up.`)
+            }
+        } else {
+            setErrorMessage(`The email address is badly formatted.`)
+        }
+
     }
 
     return (
@@ -86,7 +103,7 @@ const Login = () => {
                     {errorMessage.length > 0 && 
                         <Alert status="error" variant="solid">
                             <AlertIcon/>
-                            {errorMessage}
+                            Error: {errorMessage}
                         </Alert>
                     }
                     <FormControl>    
