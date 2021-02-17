@@ -12,11 +12,7 @@ function LogoutButton () {
 
   const logout = () => {
     localStorage.removeItem('cttcid')
-    Firebase.auth().signOut().then(() => {
-      history.push("/login")
-    }).catch(error => {
-      console.log(error)
-    })
+    Firebase.auth().signOut().catch(error => {console.log(error)})
     history.push("/login")
   }
 

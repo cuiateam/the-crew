@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Firebase from '../config/firebase'
-import { Link, Redirect } from 'react-router-dom'
+import { Link, Redirect, useHistory } from 'react-router-dom'
 import StarRating from 'star-rating-svg-react-hooks'
 import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp, IoIosGlobe } from 'react-icons/io'
 import {
@@ -25,6 +25,7 @@ import {
 import DarkModeToggle from '../components/darkModeToggle'
 import { useUserContext } from '../context/UserContext'
 import LogoutButton from '../components/logoutButton'
+import ConfirmDialog from '../components/confirmDialog'
 
 
 enum Role { Developer, Consultant, Admin }
@@ -54,6 +55,9 @@ const Member = (props) => {
     const [id, setId] = useState(props.match.params.id)
     const [mode, setMode] = useState(props.match.params.id === "0" ? "INS" : "DSP")
     const [redirect, setRedirect] = useState(false)
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen ] = useState<boolean>(false)
+
+    const history = useHistory()
         
     useEffect(() => {
         if(mode !== 'INS'){
@@ -211,6 +215,19 @@ const Member = (props) => {
         setMode("DSP")
     }
 
+    const deleteMember = async () => {
+        await db.collection("Members").doc(id).delete()
+        setIsConfirmDialogOpen(false)
+
+        if (userInfo.email === email) {
+            localStorage.removeItem('cttcid')
+            Firebase.auth().signOut().catch(error => {console.log(error)})
+            history.push("/login")
+        } else {
+            history.push("/")
+        }
+    }
+
     return (
         <>
             {redirect &&
@@ -218,6 +235,14 @@ const Member = (props) => {
             }
             <ThemeProvider theme={theme}>
                 <CSSReset />
+
+                <ConfirmDialog title="Delete Member" 
+                    description={`Are you sure to delete ${name.replace(/ .*/,'').toUpperCase()}? You can't undo this action afterwards!`}
+                    isOpen={isConfirmDialogOpen} 
+                    handleCLick={() => {(deleteMember())}} 
+                    handleCLickClose={() => setIsConfirmDialogOpen(false)}/>
+
+
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
                     <div className="btn-dark-mode-toggle">
@@ -411,6 +436,12 @@ const Member = (props) => {
                             {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
                                 <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { setMode('UPD')}} leftIcon="edit">
                                     Edit
+                                </Button>
+                            }
+
+                            {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
+                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" onClick={() => { setIsConfirmDialogOpen(true) }} leftIcon="edit">
+                                    Delete
                                 </Button>
                             }
                             <Button backgroundColor="gray.500" color="whiteAlpha.900" leftIcon="arrow-back"><Link to="/">Back</Link></Button>

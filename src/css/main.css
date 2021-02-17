@@ -17,7 +17,17 @@ body.dark-mode{
     color: var(--light1);
 }
 
+body.dark-mode section[id*='alert-dialog'] {
+    background-color: var(--dark1);
+    color: var(--light1);
+}
+
 body.light-mode {
+    background-color: var(--light1);
+    color: var(--dark1);
+}
+
+body.light-mode section[id*='alert-dialog']{
     background-color: var(--light1);
     color: var(--dark1);
 }
@@ -75,8 +85,12 @@ label {
     font-weight: bold !important;    
 }
 
-.table tr td{
+.col-name{
     width: 100%;
+}
+
+.col-button {
+    text-align: right;
 }
 
 .line {
