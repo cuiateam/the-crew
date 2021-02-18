@@ -33,15 +33,17 @@ const Login = () => {
     const { setUserInfo } = useUserContext()
     const db: any = Firebase.firestore()
 
-    // const sendEmailValidation = async (user) => {
-    //     user.sendEmailVerification().then(() => {
-    //         setAlertStatus("info")
-    //         setAlertMessage("A verification message has been sent to your email. Check your email to be able to log in to the system.")
-    //     }).catch(error => {
-    //         setAlertStatus("error")
-    //         setAlertMessage(error.message)
-    //     })
-    // }
+    const sendEmailValidation = async () => {
+        const user = Firebase.auth().currentUser
+
+        user.sendEmailVerification().then(() => {
+            setAlertStatus("info")
+            setAlertMessage("A verification message has been sent to your email. Check your email to be able to log in to the system.")
+        }).catch(error => {
+            setAlertStatus("error")
+            setAlertMessage(error.message)
+        })
+    }
     
     const handleSuccesLogin = async (user) => {
         const query = await db.collection("Members").where("email", "==", user.user.email).get()
@@ -61,7 +63,7 @@ const Login = () => {
             
             history.push("/")
         } else {
-            Firebase.auth().signOut().catch(error => {console.log(error)})
+            Firebase.auth().signOut().catch(error => {console.log(error.message)})
             setAlertStatus("error")
             setAlertMessage(`There is no user record corresponding to this identifier. The user may have been deleted.`)
         }
@@ -76,7 +78,11 @@ const Login = () => {
             if (hasMember) {
                 await Firebase.auth().signInWithEmailAndPassword(email, password)
                     .then(user => {
-                        handleSuccesLogin(user)
+                        if (user.user.emailVerified) {
+                            handleSuccesLogin(user)
+                        } else {
+                            sendEmailValidation()
+                        }
                     })
                     .catch(error => {
                         setAlertMessage(error.message)
@@ -96,13 +102,13 @@ const Login = () => {
         if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             const query = await db.collection("Emails").where("email", "==", email).get()
             const hasMember = query.docs.length > 0
-            
+
             if (hasMember) {
                 Firebase.auth().createUserWithEmailAndPassword(email, password)
                     .then(user => {
-                        handleSuccesLogin(user)
+                        sendEmailValidation()
                     }).catch(error => {
-                        setAlertMessage(error)
+                        setAlertMessage(error.message)
                     })
             } else {
                 setAlertStatus("error")
@@ -153,7 +159,7 @@ const Login = () => {
                         </FormControl>
                         <FormControl className="group-button">
                             <Divider borderColor="blackAlpha.500" mt={10}/>
-                            <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock" onClick={() => {loginEmail()}}>
+                            <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock">
                                 Log In
                             </Button>
                             <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
