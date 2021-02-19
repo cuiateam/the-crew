@@ -13,11 +13,12 @@ import {
 interface Props {title?:string, description?:string, isOpen?: boolean, handleCLick?: any, handleCLickClose?: any}
 
 
-function ConfirmDialog (props: Props){
+const ConfirmDialog = (props: Props) => {
         return(
             <AlertDialog
                 isOpen={props.isOpen}
-                leastDestructiveRef={React.useRef()}                
+                leastDestructiveRef={React.useRef()}   
+                isCentered 
             >
             
                 <AlertDialogOverlay/>
@@ -33,7 +34,7 @@ function ConfirmDialog (props: Props){
                     </AlertDialogBody>
 
                     <AlertDialogFooter>
-                        <Button mr="5" onClick={props.handleCLickClose}>Cancel</Button>
+                        <Button mr="5" backgroundColor="gray.500" color="whiteAlpha.900" onClick={props.handleCLickClose}>Cancel</Button>
                         <Button backgroundColor="messenger.500" color="whiteAlpha.900" onClick={props.handleCLick}>Confirm</Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import {
     ThemeProvider,
     CSSReset,
@@ -13,10 +13,137 @@ import {
     FormControl,
     FormLabel,
     Input,
+    Alert,
+    AlertIcon,
+    IAlert
 } from '@chakra-ui/core'
-import DarkModeToggle from '../components/darkModeToggle'
 
-function Login() {
+import Firebase from '../config/firebase'
+import DarkModeToggle from '../components/darkModeToggle'
+import { useUserContext } from '../context/UserContext'
+
+const Login = () => {
+    const history = useHistory()
+
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [alertMessage, setAlertMessage] = useState<string>('')
+    const [alertStatus, setAlertStatus] = useState<IAlert["status"]>("error")
+
+    const { setUserInfo } = useUserContext()
+    const db: any = Firebase.firestore()
+
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    const sendEmailValidation = async () => {
+        const user = Firebase.auth().currentUser
+
+        user.sendEmailVerification().then(() => {
+            setAlertStatus("info")
+            setAlertMessage("A verification message has been sent to your email. Check your email to be able to log in to the system.")
+        }).catch(error => {
+            setAlertStatus("error")
+            setAlertMessage(error.message)
+        })
+    }
+    
+    const handleSuccesLogin = async (user) => {
+        const query = await db.collection("Members").where("email", "==", user.user.email).get()
+        const hasMember = query.docs.length > 0
+        let isAdmin: boolean = false
+        
+        if (hasMember) {
+            query.docs.forEach((m) => {
+                localStorage.setItem('cttcid', m.id)
+                isAdmin = m.data().role === "Admin"
+            })
+            setUserInfo({
+                uid: user.user.uid,
+                email: user.user.email,
+                isAdmin: isAdmin 
+            })
+            
+            history.push("/")
+        } else {
+            Firebase.auth().signOut().catch(error => {console.log(error.message)})
+            setAlertStatus("error")
+            setAlertMessage(`There is no user record corresponding to this identifier. The user may have been deleted.`)
+        }
+
+    }
+    const loginEmail = async () => {
+        setAlertMessage('')
+        if (regexEmail.test(email)) {
+            const query = await db.collection("Emails").where("email", "==", email).get()
+            const hasMember = query.docs.length > 0
+
+            if (hasMember) {
+                await Firebase.auth().signInWithEmailAndPassword(email, password)
+                    .then(user => {
+                        if (user.user.emailVerified) {
+                            handleSuccesLogin(user)
+                        } else {
+                            sendEmailValidation()
+                        }
+                    })
+                    .catch(error => {
+                        setAlertStatus("error")
+                        setAlertMessage(error.message)
+                    })
+            } else {
+                setAlertStatus("error")
+                setAlertMessage(`There is no user record corresponding to this identifier. The user may have been deleted.`)
+            }
+        } else {
+            setAlertStatus("error")
+            setAlertMessage(`The email address is badly formatted.`)
+        }
+    }
+
+    const signUp = async () => {
+        setAlertMessage('')
+        if (regexEmail.test(email)) {
+            const query = await db.collection("Emails").where("email", "==", email).get()
+            const hasMember = query.docs.length > 0
+
+            if (hasMember) {
+                Firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then(user => {
+                        sendEmailValidation()
+                    }).catch(error => {
+                        setAlertMessage(error.message)
+                    })
+            } else {
+                setAlertStatus("error")
+                setAlertMessage(`Email '${email}' is not allowed to sign up.`)
+            }
+        } else {
+            setAlertStatus("error")
+            setAlertMessage(`The email address is badly formatted.`)
+        }
+
+    }
+
+    const resetPassword = async () => {
+        if (regexEmail.test(email)) {
+            Firebase.auth().sendPasswordResetEmail(email).then(() => {
+                setAlertStatus("info")
+                setAlertMessage("Check your email to reset your password.")
+            }).catch(function(error) {
+                setAlertStatus("error")
+                setAlertMessage(error.message)
+            })
+        } else {
+            setAlertStatus("error")
+            setAlertMessage(`The email address is badly formatted.`)
+        }
+    }
+
+    const submit = e => {
+        e.preventDefault()
+        loginEmail()
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <CSSReset />
@@ -32,24 +159,35 @@ function Login() {
 
             <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                 <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
-                    <FormControl>    
-                        <FormLabel pt={10}>E-mail</FormLabel>
-                        <Input type="email" name="email"/>
-                    </FormControl>
-                    <FormControl>    
-                        <FormLabel pt={10}>Password</FormLabel>
-                        <Input type="password" name="password" />
-                    </FormControl>
-                    <FormControl className="group-button">
-                        <Divider borderColor="blackAlpha.500" mt={10} mb={10} />
-                        <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock">
-                            Log In
-                        </Button>
-                        <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square">
-                            Sign Up
-                        </Button>
-                        <Button backgroundColor="gray.500" color="whiteAlpha.900" leftIcon="arrow-back"><Link to="/">Back</Link></Button>
-                    </FormControl>
+                    {alertMessage.length > 0 && 
+                        <Alert status={alertStatus} variant="solid">
+                            <AlertIcon/>
+                            {alertMessage}
+                        </Alert>
+                    }
+                    <form onSubmit={e => {submit(e)}}>
+                        <FormControl>    
+                            <FormLabel pt={10}>E-mail</FormLabel>
+                            <Input type="email" name="email" value={email} onChange={e => setEmail(e.target.value)}/>
+                        </FormControl>
+                        <FormControl>    
+                            <FormLabel pt={10}>Password</FormLabel>
+                            <Input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl className="group-button">
+                            <Divider borderColor="blackAlpha.500" mt={10}/>
+                            <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock">
+                                Log In
+                            </Button>
+                            <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
+                                Sign Up
+                            </Button>
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr="5" leftIcon="settings" onClick={() => {resetPassword()}}>
+                                Change Password
+                            </Button>
+                        </FormControl>
+                    </form>
                 </Box>
             </Grid>
         </ThemeProvider>

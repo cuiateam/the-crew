@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Firebase from '../config/firebase'
-import { Link, Redirect } from 'react-router-dom'
-import StarRating from '../components/starRating'
+import { Link, Redirect, useHistory } from 'react-router-dom'
+import StarRating from 'star-rating-svg-react-hooks'
 import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp, IoIosGlobe } from 'react-icons/io'
 import {
     ThemeProvider,
@@ -23,293 +23,320 @@ import {
     Select
 } from '@chakra-ui/core'
 import DarkModeToggle from '../components/darkModeToggle'
+import { useUserContext } from '../context/UserContext'
+import LogoutButton from '../components/logoutButton'
+import ConfirmDialog from '../components/confirmDialog'
 
 
 enum Role { Developer, Consultant, Admin }
 interface Skill { name: String, value: number }
-interface Props { mode?: string, id?: string }
-interface State { name?: string, phone?: string, phoneaux?: string, email?: string, github?: string, linkedin?: string, site?: string, skills?: Skill[], www?: string[], obs?: string, role?: Role, skillname?: string, skillvalue?: number, wwwdesc?: string, alertMessage?: string, showAlert?: boolean, id?: string, mode?: string, redirect?: boolean}
 const db = Firebase.firestore()
 const roles: string[] = ["Developer", "Consultant", "Admin"]
 let memberRef = undefined
 
-class Member extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props)
+const Member = (props) => {
+    const { userInfo } = useUserContext()
+    
+    const [name, setName] = useState("")
+    const [phone, setPhone] = useState("")
+    const [email, setEmail] = useState("")
+    const [github, setGithub] = useState("")
+    const [linkedin, setLinkedIn] = useState("")
+    const [site, setSite] = useState("")
+    const [skills, setSkills] = useState([])
+    const [www, setWww] = useState([])
+    const [obs, setObs] = useState("")
+    const [role, setRole] = useState(Role.Developer)
+    const [skillname, setSkillName] = useState("")
+    const [skillValue, setSkillValue] = useState(0)
+    const [wwwDesc, setWwwDesc] = useState("")
+    const [alertMessage, setAlertMessage] = useState("")
+    const [showAlert, setShowAlert] = useState(false)
+    const [id, setId] = useState(props.match.params.id)
+    const [mode, setMode] = useState(props.match.params.id === "0" ? "INS" : "DSP")
+    const [redirect, setRedirect] = useState(false)
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen ] = useState<boolean>(false)
 
-        let propsAux: any = this.props
-        this.onStarClick = this.onStarClick.bind(this)
-
-        this.state = {
-            name: "",
-            phone: "",
-            phoneaux: "",
-            email: "",
-            github: "",
-            linkedin: "",
-            site: "",
-            skills: [],
-            www: [],
-            obs: "",
-            role: Role.Developer,
-            skillname: "",
-            skillvalue: 0,
-            wwwdesc: "",
-            alertMessage: "",
-            showAlert: false,
-            id: propsAux.match.params.id,
-            mode: propsAux.match.params.id === "0" ? "INS" : "DSP",
-            redirect: false
+    const history = useHistory()
+        
+    useEffect(() => {
+        if(mode !== 'INS'){
+            const load = async () => {
+                memberRef = db.collection("Members").doc(id)
+                loadMember()
+            }
+            load()
         }
-        if(this.state.mode !== "INS"){
-            memberRef = db.collection("Members").doc(this.state.id)
-            this.loadMember()
-        }
-    }
-
-    updateInput = e => {
-        this.setState({
-            [e.target.name]: e.target.value
-        })
-    }
-
-    addMember = e => {
-        e.preventDefault()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+    
+    const addMember = () => {
         db.collection("Members").add({
-            name: this.state.name,
-            phone: this.state.phone,
-            email: this.state.email,
-            github: this.state.github,
-            linkedin: this.state.linkedin,
-            site: this.state.site,
-            skills: this.state.skills,
-            www: this.state.www,
-            obs: this.state.obs,
-            role: this.state.role
+            name: name,
+            phone: phone,
+            email: email,
+            github: github,
+            linkedin: linkedin,
+            site: site,
+            skills: skills,
+            www: www,
+            obs: obs,
+            role: role
         }).then((docRef) => {
-            this.setState({alertMessage: "Member inserted with success!", showAlert: true, mode: 'DSP', id: docRef.id})
+            setAlertMessage("Member inserted with success!",)
+            setShowAlert(true,)
+            setMode('DSP',)
+            setId(docRef.id)
             window.scroll(0,0)
         }).then(() => setTimeout(() =>{
-            this.setState({alertMessage: "", showAlert: false})
+            setAlertMessage("")
+            setShowAlert(false)
         }, 2000))
+
+        updateEmailList()
 
     }
 
-    updateMember = e => {
-        e.preventDefault()
-        db.collection("Members").doc(this.state.id).set({
-            name: this.state.name,
-            phone: this.state.phone,
-            email: this.state.email,
-            github: this.state.github,
-            linkedin: this.state.linkedin,
-            site: this.state.site,
-            skills: this.state.skills,
-            www: this.state.www,
-            obs: this.state.obs,
-            role: this.state.role
+    const updateMember = () => {
+        db.collection("Members").doc(id).set({
+            name: name,
+            phone: phone,
+            email: email,
+            github: github,
+            linkedin: linkedin,
+            site: site,
+            skills: skills,
+            www: www,
+            obs: obs,
+            role: role
         }).then(() => {
-            this.setState({alertMessage: "Member updated with success!", showAlert: true, mode: 'DSP'})
+            setAlertMessage("Member updated with success!")
+            setShowAlert(true)
+            setMode('DSP')
             window.scroll(0,0)
         }).then(() => setTimeout(() =>{
-            this.setState({alertMessage: "", showAlert: false})
+            setAlertMessage("")
+            setShowAlert(false)
         }, 2000))
+
+        updateEmailList()
         
     }
 
-    addSkill = () => {
-        let name: string = this.state.skillname
-        let value: number = this.state.skillvalue
+    const updateEmailList = async () => {
+        await db.collection("Emails").get().then(snapshot => {
+            snapshot.docs.forEach(doc => {
+                doc.ref.delete()
+            })
+        })
+        await db.collection("Members").get().then(snapshot => {
+            snapshot.docs.forEach(async doc => {
+               await db.collection("Emails").add({ email: doc.data().email })
+            })
+        })
+    }
+
+    const addSkill = () => {
+        let name: string = skillname
+        let value: number = skillValue
         let skillAux: Skill = {name, value}
-        let skillsAux: Skill[] = this.state.skills
+        let skillsAux: Skill[] = skills
         let update: boolean = false
 
         skillsAux.forEach(s => {
-            if(s.name.trim() === this.state.skillname.trim()){
-                s.value = this.state.skillvalue
+            if(s.name.trim() === skillname.trim()){
+                s.value = skillValue
                 update = true
             }
         })
 
-        if (!update)
-            skillsAux.push(skillAux)
+        if (!update) skillsAux.push(skillAux)
 
-        this.setState({
-            skills: skillsAux,
-            skillname: "",
-            skillvalue: 0
-        })
-
+        setSkills(skillsAux)
+        setSkillName("")
+        setSkillValue(0)
     }
 
-    deleteSkill = (s: Skill) => {
-        let skillsAux: Skill[] = this.state.skills
+    const deleteSkill = (s: Skill) => {
+        let skillsAux: Skill[] = skills
         skillsAux = skillsAux.filter(sk => sk.name.trim() !== s.name.trim())
-        this.setState({skills: skillsAux})
+        setSkills(skillsAux)
     }
 
-    addWww = () => {
-        this.setState({
-            www: [...this.state.www, this.state.wwwdesc],
-            wwwdesc: ""
-        })
+    const addWww = () => {
+        setWww([...www, wwwDesc])
+        setWwwDesc("")
     }
 
-    deleteWww = (w: string) => {
-        let wwwAux: string[] = this.state.www
+    const deleteWww = (w: string) => {
+        let wwwAux: string[] = www
         wwwAux = wwwAux.filter(www => www.trim() !== w.trim())
-        this.setState({www: wwwAux})
+        setWww(wwwAux)
     }
 
-    cleanMember = () => {
-        this.setState({
-            name: "",
-            phone: "",
-            phoneaux: "",
-            email: "",
-            github: "",
-            linkedin: "",
-            site: "",
-            skills: [],
-            www: [],
-            obs: "",
-            role: Role.Developer,
-            skillname: "",
-            skillvalue: 0,
-            wwwdesc: "",
-        })
+    const cleanMember = () => {
+        setName("")
+        setPhone("")
+        setEmail("")
+        setGithub("")
+        setLinkedIn("")
+        setSite("")
+        setSkills([])
+        setWww([])
+        setObs("")
+        setRole(Role.Developer)
+        setSkillName("")
+        setSkillValue(0)
+        setWwwDesc("")
     }
 
-    loadMember = () => {
+    const loadMember = () => {
         memberRef.get().then((m: any) => {
             if(m.exists){
-                this.setState({
-                    name: (m.data().name ? m.data().name : this.state.name),
-                    phone: (m.data().phone ? m.data().phone : this.state.phone),
-                    phoneaux: this.state.phone.replace("[^0-9.]", ""),
-                    email: (m.data().email ? m.data().email : this.state.email),
-                    github: (m.data().github ? m.data().github : this.state.github),
-                    linkedin: (m.data().linkedin ? m.data().linkedin : this.state.linkedin),
-                    site: (m.data().site ? m.data().site : this.state.site),
-                    skills: (m.data().skills ? m.data().skills : this.state.skills),
-                    www: (m.data().www ? m.data().www : this.state.www),
-                    obs: (m.data().obs ? m.data().obs : this.state.obs),
-                    role: (m.data().role ? m.data().role : this.state.role)
-                })
+                setName(m.data().name ? m.data().name : name)
+                setPhone(m.data().phone ? m.data().phone : phone)
+                setEmail(m.data().email ? m.data().email : email)
+                setGithub(m.data().github ? m.data().github : github)
+                setLinkedIn(m.data().linkedin ? m.data().linkedin : linkedin)
+                setSite(m.data().site ? m.data().site : site)
+                setSkills(m.data().skills ? m.data().skills : skills)
+                setWww(m.data().www ? m.data().www : www)
+                setObs(m.data().obs ? m.data().obs : obs)
+                setRole(m.data().role ? m.data().role : role)
             } else {
-                this.setState({redirect: true})
+                setRedirect(true)
             }
         })
     }
 
-    cancelEdit = () => {
-        this.cleanMember()
-        this.loadMember()
-        this.setState({mode: "DSP"})
+    const cancelEdit = () => {
+        cleanMember()
+        loadMember()
+        setMode("DSP")
     }
 
-    onStarClick(nextValue, prevValue, name) {
-        this.setState({skillvalue: nextValue});
-    }
+    const deleteMember = async () => {
+        await db.collection("Members").doc(id).delete()
+        setIsConfirmDialogOpen(false)
 
-    render() {
-        if (this.state.redirect === true) {
-            return <Redirect to='/404' />
+        if (userInfo.email === email) {
+            localStorage.removeItem('cttcid')
+            Firebase.auth().signOut().catch(error => {console.log(error.message)})
+            history.push("/login")
+        } else {
+            history.push("/")
         }
-        return (
+    }
+
+    return (
+        <>
+            {redirect &&
+                <Redirect to='/404' />
+            }
             <ThemeProvider theme={theme}>
                 <CSSReset />
+
+                <ConfirmDialog title="Delete Member" 
+                    description={`Are you sure to delete ${name.replace(/ .*/,'').toUpperCase()}? You can't undo this action afterwards!`}
+                    isOpen={isConfirmDialogOpen} 
+                    handleCLick={() => {(deleteMember())}} 
+                    handleCLickClose={() => setIsConfirmDialogOpen(false)}/>
+
+
                 <Flex ml={10} mr={10} mt={10}>
                     <Heading>Member</Heading>
                     <div className="btn-dark-mode-toggle">
                         <DarkModeToggle />
                     </div>
+                    <LogoutButton />
                 </Flex>
                 <Divider mt={10}/>
-                {this.state.showAlert &&
-                    <Alert status="success" mb="10" mt="-5" display="flex" justifyContent="center" alignItems="center">
+                {showAlert &&
+                    <Alert status="success" mb="10" mt="-5" display="flex" justifyContent="center" alignItems="center" variant="solid">
                         <AlertIcon />
-                        {this.state.alertMessage}
+                        {alertMessage}
                     </Alert>
                 }
                 <Grid display="flex" justifyContent="center" alignItems="center" m={10}>
                     <Box justifyContent="center" alignItems="center" width={['100%', "80%", "50%", "40%"]}>
                         <FormControl>
-                            <Avatar mr={5} src={"https://github.com/".concat(this.state.github ? this.state.github : "github").concat(".png?size=200")} showBorder width="100px" height="100px"/>
-                            {this.state.phone &&
+                            <Avatar mr={5} src={"https://github.com/".concat(github ? github : "github").concat(".png?size=200")} showBorder width="100px" height="100px"/>
+                            {phone &&
                                 <Button backgroundColor="green.500" color="whiteAlpha.900" mt={10} mr={1} size="sm" fontSize="2xl">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://wa.me/".concat(this.state.phone.replace(/[^0-9]/g, ''))}><IoLogoWhatsapp /></a>
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://wa.me/".concat(phone.replace(/[^0-9]/g, ''))}><IoLogoWhatsapp /></a>
                                 </Button>
                             }
-                            {this.state.github &&
+                            {github &&
                                 <Button backgroundColor="gray.900" color="whiteAlpha.900" mt={10} mr={1} size="sm" fontSize="2xl">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://github.com/".concat(this.state.github)}><IoLogoGithub /></a>
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://github.com/".concat(github)}><IoLogoGithub /></a>
                                 </Button>
                             }
 
-                            {this.state.linkedin &&
+                            {linkedin &&
                                 <Button backgroundColor="blue.500" color="whiteAlpha.900" mt={10} mr={1} size="sm" fontSize="2xl">
-                                    <a target="_blank" rel="noopener noreferrer" href={"https://br.linkedin.com/in/".concat(this.state.linkedin)}><IoLogoLinkedin /></a>
+                                    <a target="_blank" rel="noopener noreferrer" href={"https://br.linkedin.com/in/".concat(linkedin)}><IoLogoLinkedin /></a>
                                 </Button>
                             }
 
-                            {this.state.site &&
+                            {site &&
                                 <Button backgroundColor="gray.900" color="whiteAlpha.900" mt={10} mr={1} size="sm" fontSize="2xl">
-                                    <a target="_blank" rel="noopener noreferrer" href={this.state.site}><IoIosGlobe /></a>
+                                    <a target="_blank" rel="noopener noreferrer" href={site}><IoIosGlobe /></a>
                                 </Button>
                             }
                         </FormControl>
-                        {(this.state.name || this.state.mode !== "DSP" ) &&
+                        {(name || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10}>Name</FormLabel>
-                                <Input type="text" name="name" placeholder="Name" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.name} />
+                                <Input type="text" name="name" placeholder="Name" isReadOnly={mode === "DSP"} onChange={e => {setName(e.target.value)}} value={name} />
                             </FormControl> 
                         }
-                        {(this.state.phone || this.state.mode !== "DSP" ) &&
+                        {(phone || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10}>Phone</FormLabel>
-                                <Input type="text" name="phone" placeholder="+99 (99) 9 9999-9999" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.phone} />
+                                <Input type="text" name="phone" placeholder="+99 (99) 9 9999-9999" isReadOnly={mode === "DSP"} onChange={e => {setPhone(e.target.value)}} value={phone} />
                             </FormControl>   
                         } 
-                        {(this.state.email || this.state.mode !== "DSP" ) &&
+                        {(email || mode !== "DSP" ) &&
                             <FormControl>    
                                 <FormLabel pt={10}>E-mail</FormLabel>
-                                <Input type="email" name="email" placeholder="E-mail" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.email} />
+                                <Input type="email" name="email" placeholder="E-mail" isReadOnly={mode === "DSP" || !userInfo.isAdmin} onChange={e => { setEmail(e.target.value) }} value={email} />
                             </FormControl>
                         }    
-                        {(this.state.github || this.state.mode !== "DSP" ) &&
+                        {(github || mode !== "DSP" ) &&
                             <FormControl>    
                                 <FormLabel pt={10}>GitHub</FormLabel>
-                                <Input type="text" name="github" placeholder="Github User" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.github} />
+                                <Input type="text" name="github" placeholder="Github User" isReadOnly={mode === "DSP"} onChange={e => {setGithub(e.target.value)}} value={github} />
                             </FormControl>
                         }    
-                        {(this.state.linkedin || this.state.mode !== "DSP" ) &&
+                        {(linkedin || mode !== "DSP" ) &&
                             <FormControl>    
                                 <FormLabel pt={10}>LinkedIn</FormLabel>
-                                <Input type="text" name="linkedin" display="flex" placeholder="LinkedIn User" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.linkedin} />
+                                <Input type="text" name="linkedin" display="flex" placeholder="LinkedIn User" isReadOnly={mode === "DSP"} onChange={e => {setLinkedIn(e.target.value)}} value={linkedin} />
                             </FormControl>
                         }  
-                        {(this.state.site || this.state.mode !== "DSP" ) &&
+                        {(site || mode !== "DSP" ) &&
                             <FormControl>    
                                 <FormLabel pt={10}>Personal Site</FormLabel>
-                                <Input type="text" name="site" display="flex" placeholder="https://personalsite.com" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.site} />
+                                <Input type="text" name="site" display="flex" placeholder="https://personalsite.com" isReadOnly={mode === "DSP"} onChange={e => {setSite(e.target.value)}} value={site} />
                             </FormControl>
                         }   
-                        {(this.state.skills.length > 0 || this.state.mode !== "DSP" ) &&
+                        {(skills.length > 0 || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10} display="flex">Skills</FormLabel>
-                                {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                {(mode === "INS" || mode === "UPD") &&
                                     <table className="table">
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <Input type="text" name="skillname" placeholder="Name"  onChange={this.updateInput} value={this.state.skillname} />
+                                                    <Input type="text" name="skillname" placeholder="Name"  onChange={e => { setSkillName(e.target.value) }} value={skillname} />
                                                 </td>  
-                                                <td className="col-value"> 
-                                                    <StarRating name="skill" emptyStarColor="gray" value={this.state.skillvalue} editing={true} onStarClick={this.onStarClick} />
+                                                <td className="col-value starRating"> 
+                                                    <StarRating name="skill" noOfStars={5} selectedRating={skillValue} setSelectedRating={setSkillValue} starFillColor = {'yellow'}
+                                                        starEmptyColor = {'gray'} starBorderColor = {'black'} starSpacing = {'5px'} isReadOnly = {false} width = {"30"} height = {"30"}
+                                                    />
                                                 </td>
                                                 <td>   
-                                                    <Button display="inline" variantColor="green" onClick={this.addSkill}>+</Button>
+                                                    <Button display="inline" variantColor="green" onClick={() => { addSkill() }}>+</Button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -317,15 +344,17 @@ class Member extends React.Component<Props, State> {
                                 }
                                 <table >
                                     <tbody>
-                                        {this.state.skills.map((s, index) =>
+                                        {skills.map((s, index) =>
                                             <tr key={"div" + index}>
-                                                <td key={"v" + index}>
-                                                    <StarRating name={"s" + index} emptyStarColor="gray" value={s.value} editing={this.state.mode !== "DSP"}/>
+                                                <td key={"v" + index} className="starRating">
+                                                    <StarRating name={"s" + index} noOfStars={5} selectedRating={s.value} starFillColor = {'yellow'}
+                                                        starEmptyColor = {'gray'} starBorderColor = {'black'} starSpacing = {'5px'} isReadOnly = {true} width = {"30"} height = {"30"}
+                                                    />
                                                 </td>
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{s.name}</td>
-                                                {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                                {(mode === "INS" || mode === "UPD") &&
                                                     <td>
-                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => this.deleteSkill(s)} >x</Button>
+                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => { deleteSkill(s) }} >x</Button>
                                                     </td>
                                                 }
                                             </tr>
@@ -334,18 +363,18 @@ class Member extends React.Component<Props, State> {
                                 </table>
                             </FormControl>
                         }    
-                        {(this.state.www.length > 0 || this.state.mode !== "DSP" ) &&
+                        {(www.length > 0 || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10}>Wanna Work With</FormLabel>
-                                {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                {(mode === "INS" || mode === "UPD") &&
                                     <table className="table">
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <Input type="text" name="wwwdesc" placeholder="Description" display="inline" onChange={this.updateInput} value={this.state.wwwdesc} />
+                                                    <Input type="text" name="wwwdesc" placeholder="Description" display="inline" onChange={e => { setWwwDesc(e.target.value) }} value={wwwDesc} />
                                                 </td>
                                                 <td>
-                                                    <Button display="inline" variantColor="green" onClick={this.addWww}>+</Button>
+                                                    <Button display="inline" variantColor="green" onClick={() => { addWww() }}>+</Button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -353,12 +382,12 @@ class Member extends React.Component<Props, State> {
                                 }
                                 <table className="table">
                                     <tbody>
-                                        {this.state.www.map((w, index) =>
+                                        {www.map((w, index) =>
                                             <tr key={"div" + index}>
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{w}</td>
-                                                {(this.state.mode === "INS" || this.state.mode === "UPD") &&
+                                                {(mode === "INS" || mode === "UPD") &&
                                                     <td>
-                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" mt="5" onClick={e => this.deleteWww(w)} >x</Button>
+                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" mt="5" onClick={e => { deleteWww(w) }} >x</Button>
                                                     </td>
                                                 }
                                             </tr>
@@ -367,53 +396,62 @@ class Member extends React.Component<Props, State> {
                                 </table>
                             </FormControl>
                         }  
-                        {(this.state.obs || this.state.mode !== "DSP" ) &&
+                        {(obs || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10}>Observation</FormLabel>
-                                <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.obs} />
+                                <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={mode === "DSP"} onChange={e => { setObs(e.target.value) }} value={obs} />
                             </FormControl>
                         }   
-                        <FormControl>
-                            <FormLabel pt={10}>Role</FormLabel>
-                            <Select name="role" isDisabled={this.state.mode === "DSP"} onChange={this.updateInput} value={this.state.role}>
-                                {roles.map((r, index) => 
-                                    <option key={index} value={index}>{r}</option>
-                                )}
-                            </Select>
-                        </FormControl>  
+                        {userInfo.isAdmin && 
+                            <FormControl>
+                                <FormLabel pt={10}>Role</FormLabel>
+                                <Select name="role" isDisabled={mode === "DSP"} onChange={e => { setRole(Role[e.target.value]) }} value={role}>
+                                    {roles.map((r, index) => 
+                                        <option key={index} value={index}>{r}</option>
+                                    )}
+                                </Select>
+                            </FormControl>  
+                        }
                         <FormControl className="group-button" mb={10}>
                             <Divider mt={10} mb={10} />
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} leftIcon="arrow-back"><Link to="/">Back</Link></Button>
 
-                            {this.state.mode === "INS" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.addMember} leftIcon="check">
+                            {mode === "INS" &&
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { addMember() }} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
-                            {this.state.mode === "UPD" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={this.updateMember} leftIcon="check">
+                            {mode === "UPD" &&
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { updateMember() }} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
-                            {this.state.mode === "UPD" &&
-                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={this.cancelEdit} leftIcon="close">
+                            {mode === "UPD" &&
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={() => { cancelEdit() }} leftIcon="close">
                                     Cancel
                                 </Button>
                             }
 
-                            {this.state.mode === "DSP" &&
-                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => this.setState({mode: 'UPD'})} leftIcon="edit">
+                            {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
+                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { setMode('UPD')}} leftIcon="edit">
                                     Edit
                                 </Button>
                             }
-                            <Button backgroundColor="gray.500" color="whiteAlpha.900" leftIcon="arrow-back"><Link to="/">Back</Link></Button>
+
+                            {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
+                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" onClick={() => { setIsConfirmDialogOpen(true) }} leftIcon="edit">
+                                    Delete
+                                </Button>
+                            }
                         </FormControl>
                     </Box>
                 </Grid>
             </ThemeProvider>
-        )
-    }
+        </>
+    )
+
 }
 
 export default Member
