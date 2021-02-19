@@ -15,6 +15,7 @@ import {
     Button
 } from '@chakra-ui/core'
 import DarkModeToggle from '../components/darkModeToggle'
+import LogoutButton from '../components/logoutButton'
 
 function NotFound() {
     return (
@@ -26,6 +27,7 @@ function NotFound() {
                 <div className="btn-dark-mode-toggle">
                     <DarkModeToggle />
                 </div>
+                <LogoutButton />
             </Flex>
 
             <Divider mt={10} />
