@@ -33,6 +33,8 @@ const Login = () => {
     const { setUserInfo } = useUserContext()
     const db: any = Firebase.firestore()
 
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     const sendEmailValidation = async () => {
         const user = Firebase.auth().currentUser
 
@@ -71,7 +73,7 @@ const Login = () => {
     }
     const loginEmail = async () => {
         setAlertMessage('')
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (regexEmail.test(email)) {
             const query = await db.collection("Emails").where("email", "==", email).get()
             const hasMember = query.docs.length > 0
 
@@ -85,6 +87,7 @@ const Login = () => {
                         }
                     })
                     .catch(error => {
+                        setAlertStatus("error")
                         setAlertMessage(error.message)
                     })
             } else {
@@ -99,7 +102,7 @@ const Login = () => {
 
     const signUp = async () => {
         setAlertMessage('')
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (regexEmail.test(email)) {
             const query = await db.collection("Emails").where("email", "==", email).get()
             const hasMember = query.docs.length > 0
 
@@ -119,6 +122,21 @@ const Login = () => {
             setAlertMessage(`The email address is badly formatted.`)
         }
 
+    }
+
+    const resetPassword = async () => {
+        if (regexEmail.test(email)) {
+            Firebase.auth().sendPasswordResetEmail(email).then(() => {
+                setAlertStatus("info")
+                setAlertMessage("Check your email to reset your password.")
+            }).catch(function(error) {
+                setAlertStatus("error")
+                setAlertMessage(error.message)
+            })
+        } else {
+            setAlertStatus("error")
+            setAlertMessage(`The email address is badly formatted.`)
+        }
     }
 
     const submit = e => {
@@ -164,6 +182,9 @@ const Login = () => {
                             </Button>
                             <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
                                 Sign Up
+                            </Button>
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr="5" leftIcon="settings" onClick={() => {resetPassword()}}>
+                                Change Password
                             </Button>
                         </FormControl>
                     </form>

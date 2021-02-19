@@ -414,6 +414,7 @@ const Member = (props) => {
                         }
                         <FormControl className="group-button" mb={10}>
                             <Divider mt={10} mb={10} />
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} leftIcon="arrow-back"><Link to="/">Back</Link></Button>
 
                             {mode === "INS" &&
                                 <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { addMember() }} leftIcon="check">
@@ -444,7 +445,6 @@ const Member = (props) => {
                                     Delete
                                 </Button>
                             }
-                            <Button backgroundColor="gray.500" color="whiteAlpha.900" leftIcon="arrow-back"><Link to="/">Back</Link></Button>
                         </FormControl>
                     </Box>
                 </Grid>
