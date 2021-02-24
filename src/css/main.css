@@ -145,19 +145,20 @@ label {
     margin-left: auto;
     margin-right: auto;
     width: 50%;
-  }
-
-  .starRating>div {
-      display: flex;
-  }
-
-  .reset-password {
-      text-decoration: underline;
-      font-style: italic;
-      font-size: 0.8rem;
-  }
-
-  .reset-password:hover {
-      font-weight: bold;
-      cursor: pointer;      
 }
+
+.starRating>div {
+    display: flex;
+}
+
+.reset-password {
+    text-decoration: underline;
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+.reset-password:hover {
+    font-weight: bold;
+    cursor: pointer;      
+}
+
