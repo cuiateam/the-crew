@@ -172,8 +172,8 @@ const Login = () => {
                         </FormControl>
                         <FormControl>    
                             <FormLabel pt={10}>Password</FormLabel>
-                            <Input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)}
-                            />
+                            <Input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)}/>
+                            <p className="reset-password" onClick={() => {resetPassword()}}>Reset password</p>
                         </FormControl>
                         <FormControl className="group-button">
                             <Divider borderColor="blackAlpha.500" mt={10}/>
@@ -182,9 +182,6 @@ const Login = () => {
                             </Button>
                             <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
                                 Sign Up
-                            </Button>
-                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr="5" leftIcon="settings" onClick={() => {resetPassword()}}>
-                                Change Password
                             </Button>
                         </FormControl>
                     </form>

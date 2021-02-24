@@ -150,3 +150,14 @@ label {
   .starRating>div {
       display: flex;
   }
+
+  .reset-password {
+      text-decoration: underline;
+      font-style: italic;
+      font-size: 0.8rem;
+  }
+
+  .reset-password:hover {
+      font-weight: bold;
+      cursor: pointer;      
+}
