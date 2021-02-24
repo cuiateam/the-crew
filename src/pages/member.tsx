@@ -413,35 +413,35 @@ const Member = (props) => {
                             </FormControl>  
                         }
                         <FormControl className="group-button" mb={10}>
-                            <Divider mt={10} mb={10} />
-                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} leftIcon="arrow-back"><Link to="/">Back</Link></Button>
+                            <Divider mt={10} />
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} mt={10} leftIcon="arrow-back"><Link to="/">Back</Link></Button>
 
                             {mode === "INS" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { addMember() }} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { addMember() }} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
                             {mode === "UPD" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { updateMember() }} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { updateMember() }} leftIcon="check">
                                     Save
                                 </Button>
                             }
 
                             {mode === "UPD" &&
-                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" onClick={() => { cancelEdit() }} leftIcon="close">
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { cancelEdit() }} leftIcon="close">
                                     Cancel
                                 </Button>
                             }
 
                             {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
-                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" onClick={() => { setMode('UPD')}} leftIcon="edit">
+                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setMode('UPD')}} leftIcon="edit">
                                     Edit
                                 </Button>
                             }
 
                             {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
-                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" onClick={() => { setIsConfirmDialogOpen(true) }} leftIcon="edit">
+                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setIsConfirmDialogOpen(true) }} leftIcon="edit">
                                     Delete
                                 </Button>
                             }
