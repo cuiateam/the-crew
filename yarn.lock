@@ -7095,9 +7095,9 @@ hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0:
     react-is "^16.7.0"
 
 hono@^4.11.4:
-  version "4.12.26"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.12.26.tgz#450edfd64aad96cccc36829d63ec1430272e3ef8"
-  integrity sha512-uyZtpnYxM9CmQ7QsQknM4zN8EftNqhON1qYeIKM0Se67CCEe2c44xyGURwB0axX2fBDu1dqHrHAc1hmNT8ITkw==
+  version "4.13.5"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.13.5.tgz#3df9463c4668a0321c39515309f5891e388e9709"
+  integrity sha512-O6+/eCYRkzzzy0rPWwKLiGBR1nFuUPZynnwjxN1MBA62NNqbT0wQEzQyK2gSO5yDIDB336sXQleAhOHrzlYyKw==
 
 hosted-git-info@^2.1.4:
   version "2.8.9"
