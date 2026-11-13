@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { IoIosSunny, IoIosMoon } from 'react-icons/io'
 import { 
     Button
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 
 function DarkModeToggle () {
 

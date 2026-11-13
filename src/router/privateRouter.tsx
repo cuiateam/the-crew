@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Route, Redirect } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useUserContext } from '../context/UserContext'
 import Firebase from '../config/firebase'
 
-const PrivateRoute = ({children, ...props}) => {
+const PrivateRoute = ({ children, element, path }: { children?: React.ReactNode, element?: React.ReactNode, path?: string }) => {
   const { userInfo, setUserInfo } = useUserContext()
   const [isSignedIn, setIsSignedIn] = useState<boolean>(true)
   const db = Firebase.firestore()
@@ -13,7 +13,7 @@ const PrivateRoute = ({children, ...props}) => {
       setIsSignedIn(true)
     } else {
       if (localStorage.getItem('cttcid') !== null) {
-        getUser(localStorage.getItem('cttcid'))
+        getUser(localStorage.getItem('cttcid')!)
       } else {
         setIsSignedIn(false)
       }
@@ -26,9 +26,9 @@ const PrivateRoute = ({children, ...props}) => {
     const user = await db.collection("Members").doc(uid).get()
     if (user.exists){
       setUserInfo({
-          uid: user.data().uid,
-          email: user.data().email,
-          isAdmin: user.data().role === "Admin" 
+          uid: user.data()!.uid,
+          email: user.data()!.email,
+          isAdmin: user.data()!.role === "Admin"
       })
       setIsSignedIn(true)
     } else {
@@ -37,12 +37,9 @@ const PrivateRoute = ({children, ...props}) => {
   }
 
   return (
-      <Route {...props} render={() => {
-          return isSignedIn ?
-                  children
-              :
-                  <Redirect to='/login' />
-      }} />
+      <>
+        {isSignedIn ? (children ?? element) : <Navigate to='/login' />}
+      </>
   )
 }
 
