@@ -7,11 +7,7 @@ import ConfirmDialog from '../components/confirmDialog'
 import DarkModeToggle from '../components/darkModeToggle'
 import LogoutButton from '../components/logoutButton'
 
-import {
-    ThemeProvider,
-    CSSReset,
-    theme,
-    Button,
+import { ChakraProvider, Button,
     Flex,
     Heading,
     Grid,
@@ -20,7 +16,7 @@ import {
     Avatar, 
     Text
 
-  } from '@chakra-ui/core'
+  } from '@chakra-ui/react'
 
 import { useUserContext } from '../context/UserContext'
 
@@ -77,12 +73,11 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={theme}>
-            <CSSReset />
+        <ChakraProvider>
             
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>The Crew</Heading>
-                <Button className="btn-add-member" variantColor="green" ><Link to={`/member/0`}>+</Link></Button>
+                <Button className="btn-add-member" colorScheme="green" ><Link to={`/member/0`}>+</Link></Button>
                 <DarkModeToggle />
                 <LogoutButton />
             </Flex>
@@ -118,7 +113,7 @@ const App = () => {
                                     </td>
                                     {userInfo.isAdmin &&
                                         <td className="col-button">
-                                            <Button key={`button-${index}`} size="xs" variantColor="red" onClick={e => {openConfirmDialog(m.id, m.name)}} >x</Button>
+                                            <Button key={`button-${index}`} size="xs" colorScheme="red" onClick={e => {openConfirmDialog(m.id, m.name)}} >x</Button>
                                         </td>
                                     }
                                 </tr>
@@ -128,7 +123,7 @@ const App = () => {
                     </table>
                 </Box>
             </Grid>
-        </ThemeProvider>
+        </ChakraProvider>
     )
 }
 

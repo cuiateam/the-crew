@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Route, Switch, BrowserRouter } from 'react-router-dom'
+import { Route, Routes, BrowserRouter } from 'react-router-dom'
 import { IoMdHeart, IoLogoGithub } from 'react-icons/io'
 import { UserContext } from './context/UserContext'
 import PrivateRoute from './router/privateRouter'
@@ -17,23 +17,19 @@ const App = () => {
     <UserContext.Provider value={{ userInfo, setUserInfo }}>
       <BrowserRouter>
           <div className="content">
-              <Switch>
-                  <PrivateRoute exact path="/">
-                    <MemberList />
-                  </PrivateRoute>
-                  <PrivateRoute path="/member/:id" >
-                    <Route path="/member/:id" component={(props) => <Member {...props}/>} />
-                  </PrivateRoute>
-                  <Route path="/login" component={Login} />
-                  <Route path="*" component={NotFound} />
-              </Switch>
+              <Routes>
+                  <PrivateRoute path="/" element={<MemberList />} />
+                  <PrivateRoute path="/member/:id" element={<Member />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="*" element={<NotFound />} />
+              </Routes>
           </div>
           <div className="footer">
               <hr />
               Fork me on <a href="https://github.com/cuiateam/the-crew" target="blank" ><IoLogoGithub />.</a><br />
               Made with <IoMdHeart /> by <a href="https://cuiateam.github.io/site/" target="blank">Cuia Team.</a>
           </div>
-      </ BrowserRouter>
+      </BrowserRouter>
     </UserContext.Provider>
   )
 }

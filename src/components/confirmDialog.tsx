@@ -8,17 +8,19 @@ import {
         AlertDialogBody,
         AlertDialogFooter
 
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 
 interface Props {title?:string, description?:string, isOpen?: boolean, handleCLick?: any, handleCLickClose?: any}
 
 
 const ConfirmDialog = (props: Props) => {
+        const cancelRef = React.useRef<HTMLButtonElement>(null)
         return(
             <AlertDialog
                 isOpen={props.isOpen}
-                leastDestructiveRef={React.useRef()}   
-                isCentered 
+                leastDestructiveRef={cancelRef}
+                onClose={props.handleCLickClose}
+                isCentered
             >
             
                 <AlertDialogOverlay/>
