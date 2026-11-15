@@ -1,19 +1,19 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AiOutlineLogout } from 'react-icons/ai'
 import { 
     Button
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 
 import Firebase from '../config/firebase'
 
 function LogoutButton () {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const logout = () => {
     localStorage.removeItem('cttcid')
     Firebase.auth().signOut().catch(error => {console.log(error.message)})
-    history.push("/login")
+    navigate("/login")
   }
 
   return (

@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Firebase from '../config/firebase'
-import { Link, Redirect, useHistory } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import StarRating from 'star-rating-svg-react-hooks'
 import { IoLogoLinkedin, IoLogoGithub, IoLogoWhatsapp, IoIosGlobe } from 'react-icons/io'
-import {
-    ThemeProvider,
-    CSSReset,
-    theme,
-    FormControl,
+import { ChakraProvider, FormControl,
     FormLabel,
     Input,
     Button,
@@ -21,7 +17,7 @@ import {
     AlertIcon,
     Textarea, 
     Select
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 import DarkModeToggle from '../components/darkModeToggle'
 import { useUserContext } from '../context/UserContext'
 import LogoutButton from '../components/logoutButton'
@@ -34,7 +30,7 @@ const db = Firebase.firestore()
 const roles: string[] = ["Developer", "Consultant", "Admin"]
 let memberRef = undefined
 
-const Member = (props) => {
+const Member = () => {
     const { userInfo } = useUserContext()
     
     const [name, setName] = useState("")
@@ -52,12 +48,13 @@ const Member = (props) => {
     const [wwwDesc, setWwwDesc] = useState("")
     const [alertMessage, setAlertMessage] = useState("")
     const [showAlert, setShowAlert] = useState(false)
-    const [id, setId] = useState(props.match.params.id)
-    const [mode, setMode] = useState(props.match.params.id === "0" ? "INS" : "DSP")
+    const { id: routeId } = useParams<{ id: string }>()
+    const [id, setId] = useState(routeId)
+    const [mode, setMode] = useState(routeId === "0" ? "INS" : "DSP")
     const [redirect, setRedirect] = useState(false)
     const [isConfirmDialogOpen, setIsConfirmDialogOpen ] = useState<boolean>(false)
 
-    const history = useHistory()
+    const navigate = useNavigate()
         
     useEffect(() => {
         if(mode !== 'INS'){
@@ -222,19 +219,18 @@ const Member = (props) => {
         if (userInfo.email === email) {
             localStorage.removeItem('cttcid')
             Firebase.auth().signOut().catch(error => {console.log(error.message)})
-            history.push("/login")
+            navigate("/login")
         } else {
-            history.push("/")
+            navigate("/")
         }
     }
 
     return (
         <>
             {redirect &&
-                <Redirect to='/404' />
+                <Navigate to='/404' />
             }
-            <ThemeProvider theme={theme}>
-                <CSSReset />
+            <ChakraProvider>
 
                 <ConfirmDialog title="Delete Member" 
                     description={`Are you sure to delete ${name.replace(/ .*/,'').toUpperCase()}? You can't undo this action afterwards!`}
@@ -336,7 +332,7 @@ const Member = (props) => {
                                                     />
                                                 </td>
                                                 <td>   
-                                                    <Button display="inline" variantColor="green" onClick={() => { addSkill() }}>+</Button>
+                                                    <Button display="inline" colorScheme="green" onClick={() => { addSkill() }}>+</Button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -354,7 +350,7 @@ const Member = (props) => {
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{s.name}</td>
                                                 {(mode === "INS" || mode === "UPD") &&
                                                     <td>
-                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" onClick={e => { deleteSkill(s) }} >x</Button>
+                                                        <Button key={"bt" + index} size="xs" colorScheme="red" ml="5" onClick={e => { deleteSkill(s) }} >x</Button>
                                                     </td>
                                                 }
                                             </tr>
@@ -374,7 +370,7 @@ const Member = (props) => {
                                                     <Input type="text" name="wwwdesc" placeholder="Description" display="inline" onChange={e => { setWwwDesc(e.target.value) }} value={wwwDesc} />
                                                 </td>
                                                 <td>
-                                                    <Button display="inline" variantColor="green" onClick={() => { addWww() }}>+</Button>
+                                                    <Button display="inline" colorScheme="green" onClick={() => { addWww() }}>+</Button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -387,7 +383,7 @@ const Member = (props) => {
                                                 <td key={index}>&nbsp;&nbsp;&nbsp;{w}</td>
                                                 {(mode === "INS" || mode === "UPD") &&
                                                     <td>
-                                                        <Button key={"bt" + index} size="xs" variantColor="red" ml="5" mt="5" onClick={e => { deleteWww(w) }} >x</Button>
+                                                        <Button key={"bt" + index} size="xs" colorScheme="red" ml="5" mt="5" onClick={e => { deleteWww(w) }} >x</Button>
                                                     </td>
                                                 }
                                             </tr>
@@ -399,7 +395,7 @@ const Member = (props) => {
                         {(obs || mode !== "DSP" ) &&
                             <FormControl>
                                 <FormLabel pt={10}>Observation</FormLabel>
-                                <Textarea type="text" resize="vertical" name="obs" placeholder="Observation" isReadOnly={mode === "DSP"} onChange={e => { setObs(e.target.value) }} value={obs} />
+                                <Textarea resize="vertical" name="obs" placeholder="Observation" isReadOnly={mode === "DSP"} onChange={e => { setObs(e.target.value) }} value={obs} />
                             </FormControl>
                         }   
                         {userInfo.isAdmin && 
@@ -414,41 +410,41 @@ const Member = (props) => {
                         }
                         <FormControl className="group-button" mb={10}>
                             <Divider mt={10} />
-                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} mt={10} leftIcon="arrow-back"><Link to="/">Back</Link></Button>
+                            <Button backgroundColor="gray.500" color="whiteAlpha.900" mr={5} mt={10}><Link to="/">Back</Link></Button>
 
                             {mode === "INS" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { addMember() }} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { addMember() }}>
                                     Save
                                 </Button>
                             }
 
                             {mode === "UPD" &&
-                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { updateMember() }} leftIcon="check">
+                                <Button type="submit" backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { updateMember() }}>
                                     Save
                                 </Button>
                             }
 
                             {mode === "UPD" &&
-                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { cancelEdit() }} leftIcon="close">
+                                <Button backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { cancelEdit() }}>
                                     Cancel
                                 </Button>
                             }
 
                             {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
-                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setMode('UPD')}} leftIcon="edit">
+                                <Button backgroundColor="green.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setMode('UPD')}}>
                                     Edit
                                 </Button>
                             }
 
                             {mode === "DSP" && (userInfo.email === email || userInfo.isAdmin) &&
-                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setIsConfirmDialogOpen(true) }} leftIcon="edit">
+                                <Button backgroundColor="red.500" color="whiteAlpha.900" mr="5" mt={10} onClick={() => { setIsConfirmDialogOpen(true) }}>
                                     Delete
                                 </Button>
                             }
                         </FormControl>
                     </Box>
                 </Grid>
-            </ThemeProvider>
+            </ChakraProvider>
         </>
     )
 

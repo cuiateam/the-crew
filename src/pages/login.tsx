@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import {
-    ThemeProvider,
-    CSSReset,
-    theme,
-    Flex,
+import { useNavigate } from 'react-router-dom'
+import { ChakraProvider, Flex,
     Heading,
     Grid,
     Box,
@@ -14,21 +10,20 @@ import {
     FormLabel,
     Input,
     Alert,
-    AlertIcon,
-    IAlert
-} from '@chakra-ui/core'
+    AlertIcon
+} from '@chakra-ui/react'
 
 import Firebase from '../config/firebase'
 import DarkModeToggle from '../components/darkModeToggle'
 import { useUserContext } from '../context/UserContext'
 
 const Login = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [alertMessage, setAlertMessage] = useState<string>('')
-    const [alertStatus, setAlertStatus] = useState<IAlert["status"]>("error")
+    const [alertStatus, setAlertStatus] = useState<"error" | "info" | "success" | "warning">("error")
 
     const { setUserInfo } = useUserContext()
     const db: any = Firebase.firestore()
@@ -63,7 +58,7 @@ const Login = () => {
                 isAdmin: isAdmin 
             })
             
-            history.push("/")
+            navigate("/")
         } else {
             Firebase.auth().signOut().catch(error => {console.log(error.message)})
             setAlertStatus("error")
@@ -145,8 +140,7 @@ const Login = () => {
     }
 
     return (
-        <ThemeProvider theme={theme}>
-            <CSSReset />
+        <ChakraProvider>
 
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>Login</Heading>
@@ -177,17 +171,17 @@ const Login = () => {
                         </FormControl>
                         <FormControl className="group-button">
                             <Divider borderColor="blackAlpha.500" mt={10}/>
-                            <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5" leftIcon="unlock">
+                            <Button type="submit" backgroundColor="messenger.500" color="whiteAlpha.900" mr="5">
                                 Log In
                             </Button>
-                            <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" leftIcon="plus-square" onClick={() => {signUp()}}>
+                            <Button backgroundColor="whatsapp.500" color="whiteAlpha.900" mr="5" onClick={() => {signUp()}}>
                                 Sign Up
                             </Button>
                         </FormControl>
                     </form>
                 </Box>
             </Grid>
-        </ThemeProvider>
+        </ChakraProvider>
     )
 }
 

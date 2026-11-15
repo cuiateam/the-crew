@@ -1,11 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import TheCrew from '../assets/TheCrew.png'
-import {
-    ThemeProvider,
-    CSSReset,
-    theme,
-    Flex,
+import { ChakraProvider, Flex,
     Heading,
     Grid,
     Box,
@@ -13,14 +9,13 @@ import {
     Image,
     Text,
     Button
-} from '@chakra-ui/core'
+} from '@chakra-ui/react'
 import DarkModeToggle from '../components/darkModeToggle'
 import LogoutButton from '../components/logoutButton'
 
 function NotFound() {
     return (
-        <ThemeProvider theme={theme}>
-            <CSSReset />
+        <ChakraProvider>
 
             <Flex ml={10} mr={10} mt={10}>
                 <Heading>404 - Page Not Found</Heading>
@@ -44,7 +39,7 @@ function NotFound() {
                     </Text>
                 </Box>
             </Grid>
-        </ThemeProvider>
+        </ChakraProvider>
     )
 }
 
